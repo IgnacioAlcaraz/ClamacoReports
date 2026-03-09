@@ -1,22 +1,38 @@
+import { encryptMessage } from './encryption.js';
+
 const BASE = '/api';
+const TIMEOUT_MS = 35000; // 35s — mayor que el timeout del backend (30s)
 
 async function apiFetch(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    ...options,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-  const data = await res.json().catch(() => ({}));
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      ...options,
+      credentials: 'include',
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
 
-  if (!res.ok) {
-    throw Object.assign(new Error(data.error || 'Error desconocido'), { status: res.status });
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      throw Object.assign(new Error(data.error || 'Error desconocido'), { status: res.status });
+    }
+
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error('La solicitud tardó demasiado. Intenta de nuevo.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
   }
-
-  return data;
 }
 
 export const authApi = {
@@ -27,9 +43,11 @@ export const authApi = {
 };
 
 export const chatApi = {
-  send: (area, message, sessionId) =>
-    apiFetch('/chat/send', {
+  send: async (area, message, sessionId) => {
+    const encryptedMessage = await encryptMessage(message);
+    return apiFetch('/chat/send', {
       method: 'POST',
-      body: JSON.stringify({ area, message, sessionId }),
-    }),
+      body: JSON.stringify({ area, encryptedMessage, sessionId }),
+    });
+  },
 };

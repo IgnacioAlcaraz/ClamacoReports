@@ -8,7 +8,11 @@ function verifyToken(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Valida firma, expiración, issuer y audience — rechaza tokens de otros servicios
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, {
+      issuer: 'clamaco',
+      audience: 'clamaco-web',
+    });
     req.user = decoded;
     next();
   } catch {

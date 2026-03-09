@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { chatApi } from '../api/client.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import MessageBubble from './MessageBubble.jsx';
 
 const AREAS = [
@@ -9,12 +10,13 @@ const AREAS = [
   { value: 'cx', label: 'CX' },
 ];
 
-// Genera un sessionId único por sesión de chat para mantener contexto en n8n
+// Genera un sessionId criptográficamente seguro para mantener contexto en n8n
 function generateSessionId() {
-  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  return window.crypto.randomUUID().replace(/-/g, '');
 }
 
 export default function Chat() {
+  const { user, logout } = useAuth();
   const [area, setArea] = useState(AREAS[0].value);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -23,6 +25,18 @@ export default function Chat() {
   const sessionIdRef = useRef(generateSessionId());
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
+
+  // Si la sesión se recuperó por cookie pero la clave de encriptación no está en memoria,
+  // forzar re-login para obtenerla (la clave nunca persiste entre recargas)
+  if (user?.needsRelogin) {
+    return (
+      <div className="relogin-notice">
+        <p>Tu sesión sigue activa, pero la clave de seguridad ya no está en memoria.</p>
+        <p>Por favor, vuelve a iniciar sesión para continuar.</p>
+        <button className="btn-primary" onClick={logout}>Ir al login</button>
+      </div>
+    );
+  }
 
   // Cuando cambia el área, nueva sesión
   function handleAreaChange(e) {
