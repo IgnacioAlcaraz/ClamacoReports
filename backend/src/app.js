@@ -11,8 +11,9 @@ const { globalLimiter } = require('./middleware/rateLimiter');
 const { sanitizeInputs } = require('./middleware/sanitize');
 
 const app = express();
-// Netlify setea NETLIFY=true automáticamente en functions; NODE_ENV puede no llegar
-const isProd = process.env.NODE_ENV === 'production' || process.env.NETLIFY === 'true';
+// En Netlify Functions, NODE_ENV no se setea automáticamente.
+// Consideramos producción a todo lo que NO sea explícitamente 'development'.
+const isProd = process.env.NODE_ENV !== 'development';
 
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(
@@ -39,9 +40,11 @@ app.use(
 );
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-// process.env.URL es seteado automáticamente por Netlify con la URL del sitio
+// process.env.URL y process.env.DEPLOY_URL son seteados automáticamente por Netlify
 const allowedOrigins = isProd
-  ? [process.env.FRONTEND_URL, process.env.URL].filter(Boolean)
+  ? [process.env.FRONTEND_URL, process.env.URL, process.env.DEPLOY_URL, process.env.DEPLOY_PRIME_URL]
+      .filter(Boolean)
+      .map((u) => u.replace(/\/$/, ''))
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
 app.use(

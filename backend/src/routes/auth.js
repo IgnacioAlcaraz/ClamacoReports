@@ -23,7 +23,7 @@ function getUsers() {
   return users;
 }
 
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV !== 'development';
 
 // POST /api/auth/login
 router.post(
