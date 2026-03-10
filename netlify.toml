@@ -1,0 +1,20 @@
+[build]
+  command = "npm run build --prefix frontend"
+  publish = "frontend/dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Proxy /api/* → Netlify Function (Express backend)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+  force = true
+
+# SPA fallback — React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
