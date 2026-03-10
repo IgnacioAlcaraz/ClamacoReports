@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { authLimiter, authSlowDown } = require('../middleware/rateLimiter');
 const { verifyToken } = require('../middleware/authMiddleware');
-const { isLocked, recordFailure, recordSuccess, remainingMs } = require('../middleware/loginGuard');
 const { getUserKeyHex } = require('../utils/encryption');
 
 const router = express.Router();
@@ -41,15 +40,6 @@ router.post(
     }
 
     const { username, password } = req.body;
-    const ip = req.ip;
-
-    // Bloqueo de cuenta por intentos fallidos (por username y por IP)
-    if (isLocked(username, ip)) {
-      const mins = Math.ceil(remainingMs(username, ip) / 60000);
-      return res.status(423).json({
-        error: `Cuenta bloqueada temporalmente. Intenta en ${mins} minuto${mins !== 1 ? 's' : ''}.`,
-      });
-    }
 
     const users = getUsers();
     const hash = users[username];
@@ -59,12 +49,9 @@ router.post(
     const match = await bcrypt.compare(password, validHash);
 
     if (!hash || !match) {
-      recordFailure(username, ip);
       // Mensaje genérico — no revelar si el usuario existe o no
       return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
     }
-
-    recordSuccess(username, ip);
 
     const token = jwt.sign(
       { username },
