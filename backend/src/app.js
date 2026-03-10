@@ -11,9 +11,14 @@ const { globalLimiter } = require('./middleware/rateLimiter');
 const { sanitizeInputs } = require('./middleware/sanitize');
 
 const app = express();
-// En Netlify Functions, NODE_ENV no se setea automáticamente.
-// Consideramos producción a todo lo que NO sea explícitamente 'development'.
-const isProd = process.env.NODE_ENV !== 'development';
+// En Netlify, NETLIFY='true' se setea automáticamente.
+// Si estamos en Netlify, siempre es producción (independientemente de NODE_ENV).
+// Localmente, development si NODE_ENV='development'.
+const isProd = process.env.NETLIFY === 'true' || process.env.NODE_ENV !== 'development';
+
+// En Netlify (y otros proxies), confiar en X-Forwarded-For para que req.ip funcione
+// correctamente en el rate limiter y otros middlewares.
+app.set('trust proxy', 1);
 
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(
