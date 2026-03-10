@@ -11,10 +11,9 @@ const { globalLimiter } = require('./middleware/rateLimiter');
 const { sanitizeInputs } = require('./middleware/sanitize');
 
 const app = express();
-// CONTEXT es seteado por Netlify en function runtime ('production', 'deploy-preview', etc.)
-// Si CONTEXT está presente, siempre es producción (aunque NODE_ENV sea 'development').
-// Localmente CONTEXT no existe, así que se usa NODE_ENV.
-const isProd = process.env.CONTEXT != null || process.env.NODE_ENV !== 'development';
+// isProd: true salvo que NODE_ENV sea explícitamente 'development' (solo en local).
+// En Netlify NO setear NODE_ENV=development — eliminarlo del dashboard si está seteado.
+const isProd = process.env.NODE_ENV !== 'development';
 
 // En Netlify (y otros proxies), confiar en X-Forwarded-For para que req.ip funcione
 // correctamente en el rate limiter y otros middlewares.
@@ -45,36 +44,21 @@ app.use(
 );
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-// process.env.URL y process.env.DEPLOY_URL son seteados automáticamente por Netlify
-const allowedOrigins = isProd
-  ? [process.env.FRONTEND_URL, process.env.URL, process.env.DEPLOY_URL, process.env.DEPLOY_PRIME_URL]
-      .filter(Boolean)
-      .map((u) => u.replace(/\/$/, ''))
-  : ['http://localhost:5173', 'http://127.0.0.1:5173'];
-
-if (isProd) {
-  console.log('[CORS] allowedOrigins:', allowedOrigins);
-}
-
+// allowedOrigins se computa por request (lazy) para capturar FRONTEND_URL aunque
+// sea seteado dinámicamente por la Netlify function antes de la primera invocación.
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (isProd) {
-        console.log('[CORS] incoming origin:', origin);
-        // Permitir mismo dominio (origin puede no venir en requests same-origin)
-        // Si allowedOrigins está vacío (env vars no cargadas), bloquear y loguear
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          console.log('[CORS] BLOCKED origin:', origin, '| allowed:', allowedOrigins);
-          callback(new Error('Not allowed by CORS'));
-        }
+      const allowed = isProd
+        ? [process.env.FRONTEND_URL]
+            .filter(Boolean)
+            .map((u) => u.replace(/\/$/, ''))
+        : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
+      if (!origin || allowed.includes(origin)) {
+        callback(null, true);
       } else {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,

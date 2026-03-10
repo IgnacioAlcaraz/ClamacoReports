@@ -27,6 +27,7 @@ const authSlowDown = slowDown({
   delayAfter: 2,
   delayMs: (hits) => hits * 500,
   keyGenerator: getIp,
+  validate: { keyGeneratorIpFallback: false },
 });
 
 // ── Chat: 30 mensajes / min por usuario ───────────────────────────────────────
