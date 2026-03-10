@@ -11,7 +11,8 @@ const { globalLimiter } = require('./middleware/rateLimiter');
 const { sanitizeInputs } = require('./middleware/sanitize');
 
 const app = express();
-const isProd = process.env.NODE_ENV === 'production';
+// Netlify setea NETLIFY=true automáticamente en functions; NODE_ENV puede no llegar
+const isProd = process.env.NODE_ENV === 'production' || process.env.NETLIFY === 'true';
 
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(
@@ -38,15 +39,17 @@ app.use(
 );
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
+// process.env.URL es seteado automáticamente por Netlify con la URL del sitio
 const allowedOrigins = isProd
-  ? [process.env.FRONTEND_URL].filter(Boolean)
+  ? [process.env.FRONTEND_URL, process.env.URL].filter(Boolean)
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (isProd) {
-        if (origin && allowedOrigins.includes(origin)) {
+        // Permitir mismo dominio (origin puede no venir en requests same-origin)
+        if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
           callback(new Error('Not allowed by CORS'));
