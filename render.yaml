@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: clamaco-app
+    runtime: node
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: USERS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: WEBHOOK_OBRAS
+        sync: false
+      - key: WEBHOOK_COMERCIAL
+        sync: false
+      - key: WEBHOOK_FINANZAS
+        sync: false
+      - key: WEBHOOK_CX
+        sync: false
