@@ -47,14 +47,21 @@ const allowedOrigins = isProd
       .map((u) => u.replace(/\/$/, ''))
   : ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
+if (isProd) {
+  console.log('[CORS] allowedOrigins:', allowedOrigins);
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
       if (isProd) {
+        console.log('[CORS] incoming origin:', origin);
         // Permitir mismo dominio (origin puede no venir en requests same-origin)
+        // Si allowedOrigins está vacío (env vars no cargadas), bloquear y loguear
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true);
         } else {
+          console.log('[CORS] BLOCKED origin:', origin, '| allowed:', allowedOrigins);
           callback(new Error('Not allowed by CORS'));
         }
       } else {
