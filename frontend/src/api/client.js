@@ -1,6 +1,6 @@
 import { encryptMessage } from './encryption.js';
 
-const BASE = '/api';
+const BASE = (import.meta.env.VITE_API_URL || '') + '/api';
 const TIMEOUT_MS = 35000; // 35s — mayor que el timeout del backend (30s)
 
 async function apiFetch(path, options = {}) {
