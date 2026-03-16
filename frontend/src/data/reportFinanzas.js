@@ -1,143 +1,238 @@
 // ── MÓDULO 3: FINANZAS ────────────────────────────────────────────────────────
-// Período: Febrero 2026
+// Período: Marzo 2026
 
+// ── SEMÁFORO EJECUTIVO ────────────────────────────────────────────────────────
+// color: 'green' | 'yellow' | 'orange' | 'red'
 export const semaforo = [
-  { subarea: 'Factibilidades', estado: 'Desfavorable', color: 'rojo',     metrica: 'Obras vigentes: 32, Vencidas: 33, 7 sin fecha asignada', umbral: '> 30% vencidas respecto al total' },
-  { subarea: 'Cobranzas',      estado: 'En deterioro', color: 'naranja',  metrica: 'Febrero: -42.5% vs enero, -39.7% vs histórico; pendiente 3.24% del historial', umbral: 'Caída mensual > 20%; pendiente > 3%' },
-  { subarea: 'Deudores / Mora',estado: 'Controlable', color: 'amarillo', metrica: '93.8% en mora, monto total bajo ($61,575 vs $95.7M histórico)', umbral: 'Mora > 80% del total / Monto < 5% histórico' },
+  {
+    subarea: 'Factibilidades',
+    estado: 'Crítico',
+    color: 'red',
+    metrica: '35 vencidas vs 30 vigentes reales; 7 sin fecha asignada',
+    umbral: '>20% obras vencidas sobre vigentes = Rojo',
+  },
+  {
+    subarea: 'Cobranzas',
+    estado: 'Alerta',
+    color: 'orange',
+    metrica: '-71.5% cobranza vs histórico mensual; $3.198.768 pendiente (2,9%)',
+    umbral: 'Caída >70% sobre histórico mensual = Naranja',
+  },
+  {
+    subarea: 'Deudores / Mora',
+    estado: 'Riesgo moderado',
+    color: 'yellow',
+    metrica: '100% mora sobre cartera; 81 deudores; Gini 0,347 / HHI 0,018',
+    umbral: 'Mora >80% y diversificación Gini <0,4 = Amarillo',
+  },
 ];
 
+// ── HALLAZGOS PRINCIPALES ─────────────────────────────────────────────────────
 export const hallazgos = [
-  'Más obras vencidas (33) que vigentes (32): exposición a incumplimiento contractual inminente y obstáculos financieros operativos. Fuente: Factibilidades.',
-  'Caída del 42.5% en cobranzas en febrero 2026 respecto a enero (-39.7% vs promedio histórico), comprometiendo la previsibilidad del flujo de caja. Fuente: Cobranzas.',
-  '93.8% de la deuda actual está en mora ($57,775 / $61,575), con concentración en El Portal de Roca y Hornos 2719, aunque dispersión moderada (Gini: 0.367) permite estrategia focalizada. Fuente: Mora.',
+  'La mayoría de las obras de factibilidad están vencidas (35 vs 30 vigentes), con 7 obras sin fecha asignada, constituyendo alto riesgo operativo y reputacional.',
+  'La cobranza del mes en curso representa solo el 28,5% del promedio histórico mensual ($436.842 vs $1.530.483), con fuerte concentración en pocas obras e inmobiliarias.',
+  'El 100% de la deuda registrada está en mora ($151.556 sobre $151.556 total), pero se encuentra diversificada (Gini 0,347), mitigando el riesgo sistémico inmediato.',
 ];
 
-// ── Factibilidades ──
+// ── FACTIBILIDADES ────────────────────────────────────────────────────────────
 export const factibilidades = {
-  vigentes: 32,
-  vencidas: 33,
+  vigentes: 30,
+  vencidas: 35,
   sinFecha: 7,
-  vencenMenos30: 2,
+  vencenMenos30: 0,
 };
 
 export const vencimientosInminentes = [
-  { obra: 'Terrazas de Roca - Roca 1680', servicio: 'Edenor',  contratista: 'CMC', fechaVencimiento: '2026-03-05', riesgo: 'Paralización total, caída de flujo de caja, sobrecostos' },
-  { obra: 'Hornos 2719',                  servicio: 'Naturgy', contratista: 'FSC', fechaVencimiento: '2026-03-12', riesgo: 'Detención de obra, posible penalización contractual' },
+  // No hay vencimientos que expiren en los próximos 30 días según el reporte.
 ];
 
 export const falsosVigentes = [
-  { obra: 'Las Malvinas 7271',   servicio: 'AYSA',   contratista: 'CMC', consecuencia: 'Distorsión de capacidad real, riesgos de planificación financiera' },
-  { obra: 'Vergara 2250',        servicio: 'Edenor', contratista: 'N/D', consecuencia: 'Malas decisiones, sobreasignación de recursos' },
-  { obra: 'Roca Golf',           servicio: 'Edenor', contratista: 'N/D', consecuencia: 'Falta de visibilidad, ralentiza reacción ante desviaciones' },
-  { obra: 'Frugone / La Merced', servicio: 'Edenor', contratista: 'N/D', consecuencia: 'Subestima riesgos contractuales' },
-  { obra: '25 de Mayo 956',      servicio: 'Edenor', contratista: 'N/D', consecuencia: 'Falsa seguridad en factibilidad vigente' },
+  { obra: 'Las Malvinas 7271',  servicio: 'AYSA',   contratista: 'CMC',            consecuencia: 'Exposición a sanciones por operar sin factibilidad vigente' },
+  { obra: 'Vergara 2250',       servicio: 'Edenor', contratista: 'No especificado', consecuencia: 'Distorsión gerencial, posible intervención legal' },
+  { obra: 'Roca Golf',          servicio: 'Edenor', contratista: 'No especificado', consecuencia: 'Acumulación de costos y eventual paralización de obra' },
+  { obra: 'Frugone / La Merced',servicio: 'Edenor', contratista: 'No especificado', consecuencia: 'Demoras, potencial multa por incumplimiento regulatorio' },
+  { obra: '25 de Mayo 956',     servicio: 'Edenor', contratista: 'No especificado', consecuencia: 'Deficiente trazabilidad, exposición financiera' },
 ];
 
 export const cuellosBottella = [
-  { obra: 'Frugone / La Merced', bloqueo: 'Falta de cámara', prestadora: 'Edenor', impacto: 'Costos ocultos, demoras materiales' },
-  { obra: 'Las Malvinas 7271',   bloqueo: 'Falta de cámara', prestadora: 'Edenor', impacto: 'Paralización, gasto adicional por gestiones' },
-  { obra: 'Bosch y Oro',         bloqueo: 'Falta de cámara', prestadora: 'Edenor', impacto: 'Impacto logístico, atrasos operativos' },
-  { obra: 'Roca 1276',           bloqueo: 'Falta de cámara', prestadora: 'Edenor', impacto: 'Complicación técnica, frenos en cronograma' },
-  { obra: 'El Portal de Roca',   bloqueo: 'Falta de cámara', prestadora: 'Edenor', impacto: 'Bloqueo crítico, alto volumen de cobranza y mora' },
-  { obra: 'Roca Prado 1670',     bloqueo: 'Falta de cámara', prestadora: 'Edenor', impacto: 'Acumulación de atrasos, sobrecarga en planificación' },
+  { obra: 'Frugone / La Merced',              bloqueo: 'Solicitud de cámara', prestadora: 'Edenor',     impacto: 'Costo oculto, dilación de habilitación de obra' },
+  { obra: 'Las Malvinas 7271',                bloqueo: 'Solicitud de cámara', prestadora: 'Edenor/CMC', impacto: 'Requiere permisos extra, alto costo adicional' },
+  { obra: 'Bosch y Oro',                      bloqueo: 'Solicitud de cámara', prestadora: 'Edenor/CMC', impacto: 'Complicaciones logísticas en cronograma' },
+  { obra: 'Ntra. Sra. del Buen Viaje 146',    bloqueo: 'Falta de proyecto',   prestadora: 'Edenor/FSC', impacto: 'Retraso en inicio de aprobación' },
+  { obra: 'El Portal de Morón',               bloqueo: 'Falta de proyecto',   prestadora: 'Edenor/CMC', impacto: 'Imposibilidad de inicio de obra' },
 ];
 
-// ── Cobranzas ──
+// ── COBRANZAS ─────────────────────────────────────────────────────────────────
 export const cobranzas = {
+  mar2026: 436842,
   feb2026: 862291,
-  ene2026: 1499565,
-  promHistorico: 1428966,
-  variacionVsEnero: -42.5,
-  variacionVsHistorico: -39.7,
-  pagos: 207,
-  totalHistorico: 95727001,
-  pendienteTotal: 3099886,
-  pctPendienteVsHistorico: 3.24,
+  promHistorico: 1530483,
+  variacionVsHistorico: -71.5,
+  pagos: 102,
+  totalHistorico: 110362089,
+  pendienteTotal: 3198768,
+  pctPendienteVsHistorico: 2.9,
 };
 
-export const topObrasCobranza = [
-  { obra: 'América',               cobrado: 15820150, pendiente: 246,    interpretacion: 'Saneada' },
-  { obra: 'El Portal de Roca',     cobrado: 10285495, pendiente: 910373, interpretacion: 'Alto riesgo, urgente intervención' },
-  { obra: 'Lioni',                 cobrado: 7629869,  pendiente: 13471,  interpretacion: 'Cerca de completarse' },
-  { obra: 'Roca Golf',             cobrado: 7464070,  pendiente: 60,     interpretacion: 'Residual' },
-  { obra: 'Las Malvinas 7254',     cobrado: 7302055,  pendiente: 16100,  interpretacion: 'Bajo pendiente' },
-];
-
 export const topObrasPendiente = [
-  { obra: 'El Portal de Roca',           pendiente: 910373, riesgo: 'Prioridad absoluta, expuesta en mora y factibilidad' },
-  { obra: 'Valentin Gomez 4736/44',      pendiente: 418750, riesgo: 'Acumulación con tendencia al alza' },
-  { obra: 'Hornos 2719',                 pendiente: 416904, riesgo: 'Coincide con vencimiento próximo / foco financiero' },
-  { obra: 'Urquiza 4550',                pendiente: 393640, riesgo: 'Alto, aunque acotado respecto a total histórico' },
-  { obra: 'Terrazas de Roca - Roca 1680',pendiente: 218650, riesgo: 'También bajo peligro de vencimiento' },
+  { obra: 'El Portal de Roca',        pendiente: 874663, riesgo: 'Principal cuello de botella de caja' },
+  { obra: 'Valentín Gómez 4736/44',   pendiente: 406645, riesgo: 'Obra con tendencia elevada a mora' },
+  { obra: 'Hornos 2719',              pendiente: 399004, riesgo: 'Obra foco en problemas de pagos recurrentes' },
+  { obra: 'Yatay 754 / Abel Costa 761',pendiente: 190754, riesgo: 'Riesgo medio, requiere seguimiento' },
+  { obra: 'Virasoro 325',             pendiente: 158080, riesgo: 'Riesgo bajo, monto residual' },
 ];
 
 export const topInmobiliarias = [
-  { inmobiliaria: 'Particular',    cobrado: 19279059, pendiente: 769882, efectividad: 96, morosos: 17, clasificacion: 'Alto volumen, riesgo latente' },
-  { inmobiliaria: 'Zelaschi',      cobrado: 14958854, pendiente: 157636, efectividad: 99, morosos: 13, clasificacion: 'Efectiva' },
-  { inmobiliaria: 'Yamil Remax',   cobrado: 8538535,  pendiente: 512772, efectividad: 94, morosos: 9,  clasificacion: 'Riesgo medio' },
-  { inmobiliaria: 'Di Paolo',      cobrado: 8214357,  pendiente: 525600, efectividad: 94, morosos: 18, clasificacion: 'Riesgo medio' },
-  { inmobiliaria: 'Marcelo Russo', cobrado: 7551930,  pendiente: 287830, efectividad: 96, morosos: 8,  clasificacion: 'Efectiva' },
+  { inmobiliaria: 'Particular',    cobrado: 19805469, pendiente: 736472, efectividad: 96, morosos: 9,  clasificacion: 'Riesgo operativo medio por pendiente y morosos' },
+  { inmobiliaria: 'Zelaschi',      cobrado: 14970724, pendiente: 145766, efectividad: 99, morosos: 6,  clasificacion: 'Buena performance, bajo pendiente' },
+  { inmobiliaria: 'Yamil Remax',   cobrado: 8783255,  pendiente: 724052, efectividad: 92, morosos: 3,  clasificacion: 'Prioridad: bajo nº morosos, pendiente alto' },
+  { inmobiliaria: 'Di Paolo',      cobrado: 8468457,  pendiente: 523500, efectividad: 94, morosos: 27, clasificacion: 'Alerta: efectividad baja, alto nº morosos' },
+  { inmobiliaria: 'Marcelo Russo', cobrado: 7567850,  pendiente: 271910, efectividad: 97, morosos: 5,  clasificacion: 'Buena performance, bajo moroso' },
 ];
 
-// ── Mora ──
+// ── MORA ──────────────────────────────────────────────────────────────────────
 export const mora = {
-  deudaTotal: 61575,
-  moraTotal: 57775,
-  pctMora: 93.83,
-  noVencida: 3800,
-  deudoresUnicos: 33,
-  gini: 0.367,
-  hhi: 0.050,
+  deudaTotal: 151556,
+  moraTotal: 151556,
+  pctMora: 100,
+  deudoresUnicos: 81,
+  noVencida: 0,
+  gini: 0.347,
+  hhi: 0.018,
 };
 
 export const topDeudoresMora = [
-  { deudor: 'Claudio Carusso',           montomora: 7200, obra: 'Lioni' },
-  { deudor: 'Marcelo Belingar',          montomora: 4300, obra: 'Mitre 1185' },
-  { deudor: 'Ricardo Martín Claveras',   montomora: 4040, obra: 'Valentin Gomez 4736' },
-  { deudor: 'Roberto Hercules Zarlenga', montomora: 3648, obra: 'N/D' },
-  { deudor: 'María Belén Salatino',      montomora: 3050, obra: 'N/D' },
+  { deudor: 'Liza A. Palladino Prado',   montomora: 6603, obra: 'Urquiza 4550' },
+  { deudor: 'Axel Demian Resnik',         montomora: 5536, obra: 'Hornos 2719' },
+  { deudor: 'Fernando Fidel Femenia',     montomora: 4400, obra: 'Valentín Gómez 4736 / Urquiza' },
+  { deudor: 'Roberto Hercules Zarlenga',  montomora: 4100, obra: 'El Portal de Roca' },
+  { deudor: 'Ricardo Martín Claveras',    montomora: 4040, obra: 'El Portal de Roca' },
 ];
 
 export const topObrasMora = [
-  { obra: 'El Portal de Roca',   montomora: 17529, pct: 30.34 },
-  { obra: 'Hornos 2719',         montomora: 10750, pct: 18.61 },
-  { obra: 'Lioni',               montomora: 7200,  pct: 12.47 },
-  { obra: 'Valentin Gomez 4736', montomora: 4840,  pct: 8.38 },
-  { obra: 'Mitre 1185',          montomora: 4708,  pct: 8.15 },
+  { obra: 'El Portal de Roca',    montomora: 33483, pct: 22.09 },
+  { obra: 'Hornos 2719',          montomora: 31056, pct: 20.49 },
+  { obra: 'Valentín Gómez 4736',  montomora: 23090, pct: 15.24 },
+  { obra: 'Urquiza 4550',         montomora: 20103, pct: 13.26 },
+  { obra: 'Virasoro 325',         montomora: 12110, pct: 7.99 },
 ];
 
-export const topInmobiliariasMora = [
-  { inmobiliaria: 'Particular',        montomora: 16739, pct: 28.96 },
-  { inmobiliaria: 'Zelaschi',          montomora: 15870, pct: 27.46 },
-  { inmobiliaria: 'Di Paolo',          montomora: 5140,  pct: 8.89 },
-  { inmobiliaria: 'Norberto Gonzalez', montomora: 4300,  pct: 7.44 },
-  { inmobiliaria: 'Guarnieri',         montomora: 4040,  pct: 6.99 },
-];
-
+// ── RIESGOS ───────────────────────────────────────────────────────────────────
+// probabilidad / impacto: 'alta' | 'media' | 'baja'
 export const riesgos = [
-  { riesgo: 'Caída sostenida de cobranzas',                              probabilidad: 'alta',     impacto: 'alto',  area: 'Administración',        consecuencia: 'Menos capital operativo, retrasos en pagos' },
-  { riesgo: 'Exceso de obras con factibilidades vencidas (33/65 = 50.7%)', probabilidad: 'muy alta', impacto: 'alto',  area: 'Ingeniería/Operaciones', consecuencia: 'Parálisis productiva, penalidades contractuales' },
-  { riesgo: 'Transformación de deuda no vencida en mora ($3,800)',        probabilidad: 'media',    impacto: 'alto',  area: 'Administración',        consecuencia: 'Puede subir mora > 95%, sumando estados críticos' },
-  { riesgo: 'Dependencia en pocos grandes deudores (concentración > 60%)', probabilidad: 'alta',    impacto: 'alto',  area: 'Finanzas',              consecuencia: 'Un impago masivo afecta gran parte del flujo' },
-  { riesgo: 'Obras sin fecha asignada (7 registros)',                      probabilidad: 'alta',    impacto: 'medio', area: 'Planificación',         consecuencia: 'Desviaciones de cronograma, descontrol en caja' },
-  { riesgo: 'Cuellos de botella técnicos (6 obras bloqueadas por Edenor)', probabilidad: 'alta',   impacto: 'alto',  area: 'Ingeniería',            consecuencia: 'Congelamiento pipeline, pérdida de clientes' },
+  {
+    riesgo: 'Paralización de obras por factibilidades vencidas (35 vs 30 vigentes)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Operaciones / Legales',
+    consecuencia: 'Interrupción de obras, sanciones regulatorias y pérdida de ingresos',
+  },
+  {
+    riesgo: 'Exposición a incobrabilidad por concentración de cobro (Top 5 = 53,8%)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Finanzas / Cobranzas',
+    consecuencia: 'Caída de caja y necesidad de provisiones contables',
+  },
+  {
+    riesgo: 'Subestimación del riesgo real por falsos vigentes en factibilidades',
+    probabilidad: 'media',
+    impacto: 'alta',
+    area: 'Dirección de Proyectos',
+    consecuencia: 'Distorsión de P&L y desvío estratégico en decisiones',
+  },
+  {
+    riesgo: 'Deficiencia de liquidez operativa por mora del 100%',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Finanzas',
+    consecuencia: 'Default operativo y freno a nuevas inversiones',
+  },
+  {
+    riesgo: 'Sanciones regulatorias por 7 obras sin fecha asignada',
+    probabilidad: 'media',
+    impacto: 'media',
+    area: 'Legales / Proyectos',
+    consecuencia: 'Sanción económica, pérdida de trazabilidad y daño reputacional',
+  },
+  {
+    riesgo: 'Concentración de incidencias en Edenor (22) y 3 de Febrero (18)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Operaciones',
+    consecuencia: 'Paralización geográfica de varios proyectos y desvíos en plazos generales',
+  },
 ];
 
+// ── PLAN DE ACCIÓN ────────────────────────────────────────────────────────────
 export const planAccion = {
   h72: [
-    { accion: 'Revisar y negociar renovación de obras con vencimiento < 30 días', porQue: 'Evitar cortes de obra y caída de flujo de caja', areaLider: 'Ingeniería / Adm.', kpi: 'Cantidad de obras vigentes', riesgoMitigado: 'Interrupción operativa, caída de cobranzas' },
-    { accion: 'Detectar y corregir "falsos vigentes" en el sistema',              porQue: 'Prevención de errores de asignación presupuestaria', areaLider: 'Sistemas / Control', kpi: '% de registros actualizados', riesgoMitigado: 'Planificación incorrecta, sobreasignación de fondos' },
-    { accion: 'Contactar a top-5 deudores en mora',                               porQue: 'Acelerar recuperación de cuentas mayores', areaLider: 'Finanzas / Cobranzas', kpi: 'Monto recuperado ($)', riesgoMitigado: 'Pérdida líquida acelerada' },
+    {
+      accion: 'Revisar y asignar fecha a las 7 obras sin fecha asignada',
+      porQue: 'Evitar sanciones regulatorias y mejorar trazabilidad operativa',
+      areaLider: 'Proyectos / Legales',
+      kpi: '% obras con fecha asignada',
+      riesgoMitigado: 'Sanción reglamentaria y pérdida de control operativo',
+    },
+    {
+      accion: 'Contacto directo con los Top 5 deudores en mora para negociación',
+      porQue: 'Reducción rápida de mora y recuperación de caja inmediata',
+      areaLider: 'Cobranzas',
+      kpi: '% mora recuperada',
+      riesgoMitigado: 'Incobrabilidad y pérdida de flujo de caja',
+    },
+    {
+      accion: 'Validar vigencias y depurar los "falsos vigentes" del sistema',
+      porQue: 'Prevenir decisiones equivocadas por información gerencial engañosa',
+      areaLider: 'Proyectos / Sistemas',
+      kpi: 'Calidad de reporting de factibilidades',
+      riesgoMitigado: 'Distorsión gerencial-operativa',
+    },
   ],
   d30: [
-    { accion: 'Cronograma de cierre de cuellos técnicos',      porQue: 'Prioridad: desbloquear cashflow y nuevas habilitaciones', areaLider: 'Ingeniería', kpi: '# obras con bloqueo resuelto', riesgoMitigado: 'Congelamiento pipeline de ventas' },
-    { accion: 'Reuniones semanales con Edenor/Naturgy',         porQue: 'Resolución institucional de bloqueos críticos externos', areaLider: 'Operaciones', kpi: '% backlog resuelto', riesgoMitigado: 'Multiplicación de demoras y costos' },
-    { accion: 'Implementar alertas de cobranza recurrente',     porQue: 'Mejor monitoreo y anticipación de mora', areaLider: 'Sistemas', kpi: '% morosidad', riesgoMitigado: 'Transformación de deuda sana en mora' },
+    {
+      accion: 'Implementar seguimiento intensivo en Di Paolo y Yamil Remax',
+      porQue: 'Reducir concentración de riesgo de morosidad en canales clave',
+      areaLider: 'Cobranzas',
+      kpi: '% efectividad por agencia',
+      riesgoMitigado: 'Shock por morosidad alta',
+    },
+    {
+      accion: 'Asignar recursos extraordinarios a Edenor y 3 de Febrero',
+      porQue: 'Resolver acumulación sistémica de retrasos (22 incidencias Edenor, 18 en 3 de Feb.)',
+      areaLider: 'Operaciones',
+      kpi: '% obras regularizadas',
+      riesgoMitigado: 'Freno operativo local y pérdida de plazos',
+    },
+    {
+      accion: 'Recomponer el pipeline de factibilidades (ratio vigentes/vencidas)',
+      porQue: 'Evitar cronificación de vencimientos y pérdida de ingresos futuros',
+      areaLider: 'Proyectos',
+      kpi: 'Ratio vigentes/vencidas',
+      riesgoMitigado: 'Riesgo de pipeline futuro',
+    },
   ],
   d90: [
-    { accion: 'Auditoría transversal periódica de factibilidades',            porQue: 'Saneamiento preventivo y robustecimiento de reportes', areaLider: 'Control interno', kpi: '% falsos vigentes', riesgoMitigado: 'Distorsión sistémica, errores en decisiones' },
-    { accion: 'Estrategia de segmentación y reestructuración de deuda',       porQue: 'Reducción proactiva de mora acumulada', areaLider: 'Finanzas / Cobranzas', kpi: '% mora', riesgoMitigado: 'Cercanía a instrumentos de ejecución judicial' },
-    { accion: 'Negociación de planes de pago con top pendientes',             porQue: 'Foco cashflow y reducción de concentración de riesgo', areaLider: 'Finanzas', kpi: '% recupero', riesgoMitigado: 'Sobrecarga de liquidez concentrada en pocas cuentas' },
+    {
+      accion: 'Auditoría integral de la cartera de cobranzas',
+      porQue: 'Depurar datos, identificar falsos cobros y ajustar dirección estratégica',
+      areaLider: 'Auditoría Interna',
+      kpi: 'Tasa de morosidad vs reporte auditado',
+      riesgoMitigado: 'Incobrabilidad estructural',
+    },
+    {
+      accion: 'Estrategia de negociación masiva con inmobiliarias Top 5',
+      porQue: 'Diversificar el riesgo y mejorar la cobranza promedio (Top 5 = 53,8% del historial)',
+      areaLider: 'Finanzas',
+      kpi: '% de concentración directa en cobranza',
+      riesgoMitigado: 'Riesgo de concentración y shock de caja',
+    },
+    {
+      accion: 'Evaluar y renegociar contratos con CMC y grandes contratistas',
+      porQue: 'Mejorar cumplimiento y gestionar riesgo sistémico ante acumulación de multas',
+      areaLider: 'Dirección',
+      kpi: '% contratos sin pendientes críticos',
+      riesgoMitigado: 'Acumulación de multas y sanciones',
+    },
   ],
 };

@@ -1,96 +1,227 @@
 // ── MÓDULO 2: COMERCIAL ───────────────────────────────────────────────────────
-// Período: Febrero 2026
+// Período: Marzo 2026
 
+// ── SEMÁFORO EJECUTIVO ────────────────────────────────────────────────────────
+// color: 'green' | 'yellow' | 'orange' | 'red'
 export const semaforo = [
-  { subarea: 'Ventas x periodo', estado: 'Alerta', color: 'amarillo', metrica: 'Brecha avance-ventas 2.2% promedio cartera; picos de hasta 73.8% en Roca 1276', umbral: 'Brecha > 2%' },
-  { subarea: 'Ventas y reservas', estado: 'Controlada', color: 'verde', metrica: 'Ratio conversión reservas/boletos 90% (1210 boletos / 1127 reservas)', umbral: 'Ratio > 85%' },
-  { subarea: 'Firma boleto', estado: 'Satisfactoria', color: 'verde', metrica: '% recompra 76.2% y satisfacción 69%', umbral: 'Recompra > 70%, Sat. > 60%' },
-  { subarea: 'Emblue (email mkt)', estado: 'Crítico', color: 'rojo', metrica: 'Bounce Rate máximo 16.6%; Open Rate < 15% en 2 de 3 campañas', umbral: 'Bounce < 2%; Open > 15%' },
+  {
+    subarea: 'Ventas x periodo',
+    estado: 'Bajo presión',
+    color: 'yellow',
+    metrica: 'Gap avance-ventas: 2.2% negativo; 3 obras con 0% vendido',
+    umbral: 'Gap >2% negativo = Amarillo',
+  },
+  {
+    subarea: 'Ventas y reservas',
+    estado: 'Robusto con alertas',
+    color: 'yellow',
+    metrica: 'Boletos 2026: 46 (año en curso); boletos 2025: 142 (año completo)',
+    umbral: 'No comparables directamente — requiere seguimiento',
+  },
+  {
+    subarea: 'Firma boleto',
+    estado: 'Sólido con riesgos',
+    color: 'green',
+    metrica: 'Satisfacción 69% Muy Buena / Recompra 76.2% / Incumplimiento plazos 13.1%',
+    umbral: 'Satisfacción <65% o incumplimiento >15% = Amarillo',
+  },
+  {
+    subarea: 'Emblue',
+    estado: 'Bajo estándar',
+    color: 'red',
+    metrica: 'Bounce rate: 16.6% / Open rate mínimo: 7%',
+    umbral: 'Bounce >2%, Open <15% = Rojo',
+  },
 ];
 
+// ── HALLAZGOS PRINCIPALES ─────────────────────────────────────────────────────
 export const hallazgos = [
-  'Riesgo financiero por avance superior a ventas: obras como Roca 1276 (brecha 73.8%) y Bustillo 357 (brecha 29.2%) con stock inmovilizado y estrés de caja. Fuente: Ventas x Periodo.',
-  'Alta eficacia en conversión de reservas: ratio 1.07x (90% de reservas convertidas), sin aging preocupante. Fuente: Ventas y Reservas.',
-  'Campañas digitales con problemas estructurales: Bounce Rate 16.6% y Open Rate 7% en "Envío General Dic 2025 - Branding". Sin acción, riesgo de bloqueo por ISPs. Fuente: Emblue.',
+  'La brecha negativa de 2.2% entre avance de obra y ventas compromete la liquidez e inmoviliza capital, con tres obras sin ninguna venta registrada y dos obras terminadas con stock sin rotar.',
+  'El bounce rate de 16.6% en la campaña de mayor alcance erosiona severamente la entregabilidad y limita el canal de prospección digital.',
+  'La satisfacción y fidelidad del comprador son fortalezas reales (76.2% volvería a invertir), pero el 13.1% de incumplimiento de plazos y el 32.1% en pozo representan un riesgo reputacional y legal latente.',
 ];
 
-// Brecha avance vs. ventas
+// ── BRECHA AVANCE VS. VENTAS ──────────────────────────────────────────────────
 export const brechaAvance = [
-  { obra: 'Roca 1276',       avance: 100.0, vendido: 26.2, brecha: 73.8, tipo: 'Stock inmovilizado extremo' },
-  { obra: 'Bustillo 357',    avance: 29.2,  vendido: 0.0,  brecha: 29.2, tipo: 'Stock sin tracción' },
-  { obra: 'Mitre 929',       avance: 100.0, vendido: 76.2, brecha: 23.8, tipo: 'Riesgo de lento recupero' },
-  { obra: 'Promedio cartera',avance: 90.9,  vendido: 88.7, brecha: 2.2,  tipo: 'Ligera sobre-construcción' },
+  { obra: 'Roca 1276',        avance: 100.0, vendido: 26.2, brecha: 73.8,  tipo: 'Stock inmovilizado (obra finalizada)' },
+  { obra: 'Roca 1650',        avance: 55.6,  vendido: 0.0,  brecha: 55.6,  tipo: 'Riesgo lanzamiento' },
+  { obra: 'Bustillo 357',     avance: 29.2,  vendido: 0.0,  brecha: 29.2,  tipo: 'Riesgo lanzamiento' },
+  { obra: 'Mitre 929',        avance: 100.0, vendido: 76.2, brecha: 23.8,  tipo: 'Liquidez lenta (obra finalizada)' },
+  { obra: 'W. de Tata 4965',  avance: 11.1,  vendido: 0.0,  brecha: 11.1,  tipo: 'Bajo desarrollo' },
+  { obra: 'Hornos 2719',      avance: 86.6,  vendido: 73.0, brecha: 13.6,  tipo: 'Bajo' },
+  { obra: 'Belgrano 4664',    avance: 48.6,  vendido: 60.4, brecha: -11.8, tipo: 'Motor solvencia' },
+  { obra: 'Valentín G. 4736', avance: 63.4,  vendido: 87.9, brecha: -24.5, tipo: 'Motor solvencia' },
 ];
 
-// Stock inmovilizado
+// ── STOCK INMOVILIZADO ────────────────────────────────────────────────────────
 export const stockInmovilizado = [
-  { obra: 'Bustillo 357',    avance: 29.2, vendido: 0,    hipotesis: 'Precio/desalineación de demanda' },
-  { obra: 'Roca 1650',       avance: 11.2, vendido: 0,    hipotesis: 'Fallo propuesta valor; comercializadora ineficaz' },
-  { obra: 'W. de Tata 4965', avance: null, vendido: 0,    hipotesis: 'Sobreprecio u oferta local similar' },
+  { obra: 'Bustillo 357',    avance: 29.2, vendido: 0, hipotesis: 'Desajuste producto-mercado o precio no competitivo' },
+  { obra: 'Roca 1650',       avance: 55.6, vendido: 0, hipotesis: 'Diseño, ubicación o canal de venta inadecuado' },
+  { obra: 'W. de Tata 4965', avance: 11.1, vendido: 0, hipotesis: 'Canales de publicidad insuficientes, escasa demanda detectada' },
 ];
 
-// Motores de solvencia
+// ── MOTORES DE SOLVENCIA ──────────────────────────────────────────────────────
 export const motoresSolvencia = [
-  { obra: 'Valentin Gomez 4736', avance: 53.3, vendido: 76.3, rol: 'Motor de liquidez (ventas superan avance)' },
-  { obra: 'Hornos 2719',         avance: 83.3, vendido: 97.0, rol: 'Genera cashflow clave' },
-  { obra: 'Belgrano 4664',       avance: 48.6, vendido: 60.4, rol: 'Disminuye riesgos de stock' },
+  { obra: 'Valentín Gómez 4736', avance: 63.4, vendido: 87.9, rol: 'Estabilizador de cashflow; ventas anticipan avance en 24.5 puntos' },
+  { obra: 'Belgrano 4664',       avance: 48.6, vendido: 60.4, rol: 'Motor de venta anticipada; demanda supera construcción' },
+  { obra: 'Hornos 2719',         avance: 86.6, vendido: 73.0, rol: 'Alto desempeño comercial en obra avanzada' },
 ];
 
-// Embudo comercial
+// ── EMBUDO COMERCIAL ──────────────────────────────────────────────────────────
 export const embudo = {
-  boletos: 1210,
-  reservas: 1127,
-  ratio: 1.07,
+  boletos: 1216,
+  reservas: 1130,
+  ratio: 1.08,
   agingMas60: 0,
 };
 
-// Canal por inmobiliaria
+// ── CANAL POR INMOBILIARIA ────────────────────────────────────────────────────
 export const canalInmobiliaria = [
-  { inmobiliaria: 'Particular',  boletos: 244, reservas: null, ratio: 114.0, clasificacion: 'Motor' },
-  { inmobiliaria: 'Jorge Cota',  boletos: 2,   reservas: 8,    ratio: 25.0,  clasificacion: 'Cuello de botella' },
+  { inmobiliaria: 'Particular',  boletos: 245, reservas: null, ratio: null, clasificacion: 'Líder de volumen' },
+  { inmobiliaria: 'Jorge Cota',  boletos: 2,   reservas: 8,    ratio: 25,   clasificacion: 'Alerta: baja conversión' },
 ];
 
-// KPIs firma boleto
+// ── KPIs — FIRMA BOLETO ───────────────────────────────────────────────────────
 export const kpisFirmaBoleto = [
-  { label: 'Total respuestas encuesta',    actual: 84,   anterior: null, unidad: '', tendenciaBuena: 'up' },
-  { label: '% recompra / volvería invertir', actual: 76.2, anterior: null, unidad: '%', tendenciaBuena: 'up' },
-  { label: 'Satisfacción atención "Muy buena"', actual: 69.0, anterior: null, unidad: '%', tendenciaBuena: 'up' },
-  { label: 'Cumplimiento plazos "Sí"',     actual: 54.8, anterior: null, unidad: '%', tendenciaBuena: 'up' },
-  { label: 'Incumplimiento plazos "No"',   actual: 13.1, anterior: null, unidad: '%', tendenciaBuena: 'down' },
+  { label: 'Total respuestas encuesta',         actual: 84,   anterior: null, unidad: '',  tendenciaBuena: 'up' },
+  { label: '% recompra / volvería a invertir',  actual: 76.2, anterior: null, unidad: '%', tendenciaBuena: 'up' },
+  { label: 'Satisfacción "Muy Buena"',          actual: 69.0, anterior: null, unidad: '%', tendenciaBuena: 'up' },
+  { label: 'Canal dominante (Inmobiliarias)',   actual: 52.9, anterior: null, unidad: '%', tendenciaBuena: 'neutral' },
+  { label: 'Cumplimiento de plazos "Sí"',       actual: 54.8, anterior: null, unidad: '%', tendenciaBuena: 'up' },
+  { label: 'Incumplimiento de plazos "No"',     actual: 13.1, anterior: null, unidad: '%', tendenciaBuena: 'down' },
+  { label: 'Compradores en pozo',               actual: 32.1, anterior: null, unidad: '%', tendenciaBuena: 'down' },
 ];
 
-// Campañas Emblue
+// ── CAMPAÑAS EMBLUE ───────────────────────────────────────────────────────────
 export const emblue = [
-  { campana: 'Inversiones',                    openRate: 25, ctr: 19, ctor: 130, bounceRate: 5.3,  clasificacion: 'Destacada' },
-  { campana: 'No todos buscan lo mismo',       openRate: null, ctr: null, ctor: null, bounceRate: null, clasificacion: 'Oportunidad' },
-  { campana: 'Envío General Dic 2025 - Branding', openRate: 7, ctr: 8,  ctor: 174, bounceRate: 16.6, clasificacion: 'Problema grave' },
+  { campana: 'Inversiones',                    openRate: 25,  ctr: 19, ctor: null, bounceRate: 5.3,  clasificacion: 'Destacada' },
+  { campana: 'No todos buscan lo mismo',       openRate: 7,   ctr: 8,  ctor: null, bounceRate: 11.1, clasificacion: 'Oportunidad de mejora' },
+  { campana: 'Envío General Dic 2025 - Branding', openRate: 7, ctr: 8, ctor: null, bounceRate: 16.6, clasificacion: 'Problema grave' },
 ];
 
+// ── RIESGOS ───────────────────────────────────────────────────────────────────
+// probabilidad / impacto: 'alta' | 'media' | 'baja'
 export const riesgos = [
-  { riesgo: 'Stock inmovilizado extremo (Roca 1276)', probabilidad: 'alta', impacto: 'alto', area: 'Comercial', consecuencia: 'Capital ocioso, afecta liquidez y TIR' },
-  { riesgo: 'Estrés de caja general',                probabilidad: 'alta', impacto: 'alto', area: 'Finanzas/Comercial', consecuencia: 'Puede limitar nuevas inversiones' },
-  { riesgo: 'Bounce Rate alto en campañas Emblue',   probabilidad: 'alta', impacto: 'medio', area: 'Marketing', consecuencia: 'Limitación alcance, bloqueo por ISPs' },
-  { riesgo: 'Baja conversión canal Jorge Cota',      probabilidad: 'alta', impacto: 'medio', area: 'Comercial', consecuencia: 'Unidades estancadas, bajo performance canal' },
-  { riesgo: 'Incumplimiento plazo en entrega (13.1%)', probabilidad: 'media', impacto: 'medio', area: 'Postventa/Obras', consecuencia: 'Confianza perdida, menos recompra' },
-  { riesgo: 'Falta retroalimentación cualitativa (91.7% sin feedback)', probabilidad: 'alta', impacto: 'medio', area: 'Atención al cliente', consecuencia: 'Dificultad en mejora operativa real' },
-  { riesgo: 'Plazo excesivo "en pozo" (32.1%)',      probabilidad: 'media', impacto: 'medio', area: 'Obra/Planificación', consecuencia: 'Percepción de lentitud, menor satisfacción' },
-  { riesgo: 'Sin gestión proactiva de leads por canales', probabilidad: 'media', impacto: 'medio', area: 'Comercial/Marketing', consecuencia: 'Menor rotación, costo de captación superior' },
+  {
+    riesgo: 'Déficit de caja por brecha avance-ventas (2.2% negativo)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Comercial / Finanzas',
+    consecuencia: 'Menor liquidez disponible y déficit operativo proyectado al cierre del año',
+  },
+  {
+    riesgo: 'Listas de email con bounce crítico (16.6% en campaña principal)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Marketing',
+    consecuencia: 'Entregabilidad deteriorada, pérdida del canal digital y bloqueo por ISPs',
+  },
+  {
+    riesgo: 'Obras terminadas con stock inmovilizado (Roca 1276 — 73.8% sin vender)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Comercial',
+    consecuencia: 'Capital sin horizonte de recupero definido, costo de oportunidad creciente',
+  },
+  {
+    riesgo: 'Concentración en canal inmobiliario (52.9% de captación)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Comercial',
+    consecuencia: 'Caída abrupta de ventas si el canal se debilita',
+  },
+  {
+    riesgo: 'Baja conversión canal Jorge Cota (25% — 2 boletos sobre 8 reservas)',
+    probabilidad: 'alta',
+    impacto: 'media',
+    area: 'Comercial / Operaciones',
+    consecuencia: 'Inventario bloqueado sin rotación visible',
+  },
+  {
+    riesgo: 'Riesgo reputacional por incumplimiento de plazos (13.1%)',
+    probabilidad: 'media',
+    impacto: 'media',
+    area: 'Postventa',
+    consecuencia: 'Reclamos legales y pérdida de confianza del comprador',
+  },
+  {
+    riesgo: 'Ausencia de programa formal de recompra (76.2% con intención sin mecanismo)',
+    probabilidad: 'alta',
+    impacto: 'media',
+    area: 'Comercial',
+    consecuencia: 'Pérdida de ventas de bajo costo de adquisición a clientes fidelizados',
+  },
 ];
 
+// ── PLAN DE ACCIÓN ────────────────────────────────────────────────────────────
 export const planAccion = {
   h72: [
-    { accion: 'Limpieza urgente de base de datos Emblue', porQue: 'Rebotes afectan Open Rate y capacidad de alcance', areaLider: 'Marketing', kpi: 'Bounce Rate, Open Rate', riesgoMitigado: 'Mal desempeño campañas digitales' },
-    { accion: 'Reunión correctiva con Jorge Cota y canales cuello de botella', porQue: 'Liberar reservas bloqueadas, mejorar ratio de conversión', areaLider: 'Comercial', kpi: 'Ratio conversión reservas', riesgoMitigado: 'Inventario estancado' },
-    { accion: 'Brief ejecutivo para pricing y descuentos en Roca 1276', porQue: 'Atacar stock inmovilizado extremo, catalizar ventas urgentes', areaLider: 'Comercial', kpi: 'Unidades vendidas', riesgoMitigado: 'Estrés de caja, baja liquidez' },
+    {
+      accion: 'Limpiar listas de email eliminando contactos con rebote e inactivos',
+      porQue: 'Bounce rate de 16.6% compromete la entregabilidad de todas las campañas futuras',
+      areaLider: 'Marketing',
+      kpi: 'Bounce rate < 2%',
+      riesgoMitigado: 'Deterioro del canal digital',
+    },
+    {
+      accion: 'Lanzar campaña específica para liquidar Roca 1276 (17 uds.) y Mitre 929 (2 uds.)',
+      porQue: 'Obras terminadas con stock inmovilizado y costo de oportunidad creciente',
+      areaLider: 'Comercial',
+      kpi: 'Unidades vendidas, reducción de brecha',
+      riesgoMitigado: 'Déficit de caja',
+    },
+    {
+      accion: 'Auditar reservas de Jorge Cota (8 reservas, 2 boletos) y depurar sin justificación',
+      porQue: 'Conversión del 25% bloquea inventario sin señal de alerta temprana',
+      areaLider: 'Operaciones',
+      kpi: 'Ratio de conversión por canal',
+      riesgoMitigado: 'Stock inmovilizado',
+    },
   ],
   d30: [
-    { accion: 'Rediseñar asuntos y segmentación en campañas Emblue', porQue: 'Mejorar Open Rate y llegada efectiva a nuevas audiencias', areaLider: 'Marketing', kpi: 'Open Rate, Leads nuevos', riesgoMitigado: 'Menor captación de demanda' },
-    { accion: 'Ajustar política de recompra e incentivos para inversores', porQue: 'Subir % recompra real y satisfacción', areaLider: 'Comercial', kpi: '% recompra, NPS', riesgoMitigado: 'Pérdida de lealtad' },
-    { accion: 'Implementar paquetes de financiamiento directo en Mitre 929', porQue: 'Incrementar atractivo de compra en stock lento', areaLider: 'Comercial', kpi: 'Unidades vendidas', riesgoMitigado: 'Stock parado, falta de cashflow' },
+    {
+      accion: 'Revisar pricing y estrategia de producto en Bustillo 357 y Roca 1650',
+      porQue: 'Ambas con 0% vendido pese a avance de obra significativo',
+      areaLider: 'Comercial',
+      kpi: '% vendido, nuevas reservas',
+      riesgoMitigado: 'Stock invendible',
+    },
+    {
+      accion: 'Replicar modelo de campaña "Inversiones" en obras con bajo desempeño',
+      porQue: 'Única campaña que supera benchmarks; metodología reproducible',
+      areaLider: 'Marketing',
+      kpi: 'Open Rate y CTR',
+      riesgoMitigado: 'Baja efectividad digital',
+    },
+    {
+      accion: 'Formalizar acuerdos e incentivos con inmobiliarias de mayor conversión',
+      porQue: 'Canal dominante (52.9%) sin estructura de incentivos ni diversificación',
+      areaLider: 'Comercial',
+      kpi: '% captación por canal',
+      riesgoMitigado: 'Concentración en canal único',
+    },
   ],
   d90: [
-    { accion: 'Monitoreo trimestral de brecha avance-ventas en toda la cartera', porQue: 'Prever próximos cuellos de botella y anticipar acciones', areaLider: 'Control de gestión', kpi: 'Reducción brecha', riesgoMitigado: 'Estrés de caja recurrente' },
-    { accion: 'Estrategia de alianzas con inmobiliarias top y segmento', porQue: 'Maximizar rol del canal líder, ampliar tracción', areaLider: 'Comercial', kpi: 'Unidades vendidas por canal', riesgoMitigado: 'Pérdida de oportunidades' },
-    { accion: 'Reporte mensual de aging y feedback en ciclo de reservas', porQue: 'Mantener inexistencia de aging, anticipar backlog, capturar feedback real', areaLider: 'Operaciones', kpi: 'Aging reservas, NPS', riesgoMitigado: 'Reservas trabadas, pérdida de ritmo' },
+    {
+      accion: 'Diseñar e implementar programa formal de recompra para inversores',
+      porQue: '76.2% manifiesta intención de reinvertir sin mecanismo que la capture',
+      areaLider: 'Comercial',
+      kpi: 'Tasa de recompra, ventas totales',
+      riesgoMitigado: 'Pérdida de clientes fidelizables',
+    },
+    {
+      accion: 'Diversificar canales comerciales más allá del canal inmobiliario',
+      porQue: '52.9% de dependencia en canal único es una vulnerabilidad estructural',
+      areaLider: 'Comercial',
+      kpi: '% ventas por canal secundario',
+      riesgoMitigado: 'Concentración de ventas',
+    },
+    {
+      accion: 'Mejorar captura de feedback post-venta (91.7% sin comentario)',
+      porQue: 'Sin feedback cualitativo no se pueden detectar mejoras concretas en el proceso',
+      areaLider: 'Postventa',
+      kpi: '% encuestas con comentario completo',
+      riesgoMitigado: 'Ceguera operativa',
+    },
   ],
 };

@@ -7,220 +7,199 @@
 export const semaforo = [
   {
     subarea: 'Arquitectura',
-    estado: 'Deterioro leve',
-    color: 'orange',
-    metrica: 'Backlog +16% (1.334 → 1.542 ítems)',
-    umbral: '>10% incremento mes a mes en ítems totales',
+    estado: 'Moderado',
+    color: 'yellow',
+    metrica: 'Backlog: 1.611 ítems (-10 netos); 6 obras clave estancadas',
+    umbral: 'Backlog pendiente >1.000 = Amarillo',
   },
   {
     subarea: 'Detalle de Obra',
     estado: 'Heterogéneo',
-    color: 'yellow',
-    metrica: '7 obras estancadas <5% avance sobre 35 ítems',
-    umbral: '>5 obras bajo 10% avance y sin cierre en 90 días',
+    color: 'orange',
+    metrica: '24.9% obras en limbo, 23.1% no arrancó',
+    umbral: '>20% limbo/no arranque = Naranja',
   },
   {
     subarea: 'Programación',
-    estado: 'Parcialmente Cumplido',
+    estado: 'Limitado',
     color: 'yellow',
-    metrica: '25 de 53 obras con demoras administrativas',
-    umbral: '>20% de obras con demoras administrativas',
+    metrica: 'Solo 8.9% de obras activas; concentración de avance en pocas obras',
+    umbral: '<10% activas = Amarillo',
   },
   {
     subarea: 'Gestoría',
-    estado: 'Riesgo elevado',
-    color: 'orange',
-    metrica: '7 obras >90 días estancadas, 3 responsables bloqueando >2 casos',
-    umbral: '>5 casos >90 días y >2 responsables multibloqueo',
+    estado: 'Riesgoso',
+    color: 'red',
+    metrica: '28 obras atrasadas, 26 estancadas >30 días, 4 pasos por vencer',
+    umbral: '>10% con atrasos estancados = Rojo',
   },
 ];
 
 // ── HALLAZGOS PRINCIPALES ─────────────────────────────────────────────────────
 export const hallazgos = [
-  'Persisten cuellos de botella operativos —tanto por atrasos administrativos (gestoría) como dependencias interáreas— con un 13% del total de obras bajo algún tipo de bloqueo relevante.',
-  'Se identifican descalces críticos entre avance de obra y porcentaje vendido en al menos 3 proyectos de peso, generando riesgos comerciales y financieros si no se interviene.',
-  'Más de 20 proyectos permanecen en estado indeterminado (Desconocido / NO ARRANCÓ), afectando la calidad informativa y la integridad del control operativo.',
+  'Riesgo por falta de visibilidad: un cuarto del portfolio (56 obras) está en limbo, impidiendo control operativo, financiero y comercial.',
+  'Concentración operativa: Morón y Tres de Febrero suman más del 70% de las obras; la disrupción local afecta toda la cartera.',
+  'Alertas de gestión municipal y trámites: 28 obras con atrasos y 26 estancadas por más de 30 días, principalmente por demoras municipales, de arquitectura o de terrenos.',
 ];
 
 // ── KPIs — ARQUITECTURA ───────────────────────────────────────────────────────
 export const kpisArquitectura = [
-  { label: 'Total ítems', actual: 1542, anterior: 1334, unidad: '', tendenciaBuena: 'down' },
-  { label: 'Cerrados en el mes', actual: 6, anterior: 0, unidad: '', tendenciaBuena: 'up' },
-  { label: 'Pendientes totales', actual: 911, anterior: 1066, unidad: '', tendenciaBuena: 'down' },
-  { label: 'Ítems ingresados', actual: 0, anterior: 0, unidad: '', tendenciaBuena: 'down' },
+  { label: 'Total ítems', actual: 1611, anterior: 1621, unidad: '', tendenciaBuena: 'down' },
+  { label: 'Cerrados en el período', actual: 10, anterior: 0, unidad: '', tendenciaBuena: 'up' },
+  { label: 'Nuevos ingresados', actual: 0, anterior: 0, unidad: '', tendenciaBuena: 'down' },
+  { label: 'Balance neto', actual: -10, anterior: 0, unidad: ' ítems', tendenciaBuena: 'down' },
 ];
 
-// ── OBRAS ESTANCADAS (TOP 7) ──────────────────────────────────────────────────
+// ── OBRAS ESTANCADAS (TOP 6) ──────────────────────────────────────────────────
 export const obrasEstancadas = [
-  { obra: 'El Portal de Morón — Abel Costa al 800 / Yatay 846/50/862', avance: 2.86, pendientes: 37, score: 139 },
-  { obra: 'Mitre 4872, Caseros', avance: 2.94, pendientes: 36, score: 137 },
-  { obra: 'Hurlingham Park', avance: 3.03, pendientes: 35, score: 135 },
-  { obra: 'Av. Gral Paz y Mosconi, Sáenz Peña', avance: 3.23, pendientes: 33, score: null },
-  { obra: 'Roca 1568', avance: 6.25, pendientes: 32, score: null },
-  { obra: 'Benito Chas & Juan XXIII, Martín Coronado', avance: 12.12, pendientes: 32, score: null },
-  { obra: 'Gral. José de San Martín 451 (Obispado)', avance: 18.18, pendientes: 30, score: null },
+  { obra: 'El Portal de Morón — Abel Costa al 800 / Yatay 846/50/862', avance: 22.86, pendientes: 34, score: null },
+  { obra: 'Mitre 4872, Caseros', avance: 2.94, pendientes: 33, score: null },
+  { obra: 'Hurlingham Park', avance: 3.03, pendientes: 32, score: null },
+  { obra: 'Av. Gral Paz y Mosconi, Sáenz Peña', avance: 3.23, pendientes: 30, score: null },
+  { obra: 'Benito Chas & Juan XXIII, Martín Coronado', avance: 12.12, pendientes: 29, score: null },
+  { obra: 'Gral. José de San Martín 451 (Obispado)', avance: 18.18, pendientes: 27, score: null },
 ];
 
 // ── OBRAS >80% BLOQUEADAS POR DEPENDENCIAS ────────────────────────────────────
 export const obrasBlockeadas = [
-  { obra: 'Hornos 2719', avance: 89.66, pendientes: 3, dependencia: 'Conforme a obra, Cómputo, Plano PH' },
+  { obra: 'Abel Costa 761 (FASECO)', avance: 96.88, pendientes: 1, dependencia: 'Plano PH' },
   { obra: 'Mitre 1185', avance: 93.75, pendientes: 2, dependencia: 'Conforme a obra, Plano PH' },
-  { obra: 'Roca 1680 — Terrazas de Roca', avance: 81.25, pendientes: 6, dependencia: 'Conforme a obra, Cómputo, Guardas' },
-  { obra: 'Roca 1636 (Portal de Roca)', avance: 81.25, pendientes: 6, dependencia: 'Conforme a obra, Cómputo, Guardas' },
-  { obra: 'Valentín Gómez 4736/44', avance: 80.65, pendientes: 7, dependencia: 'Conforme a obra, Cómputo, Guardas' },
-  { obra: 'Virasoro 325', avance: 91.18, pendientes: 3, dependencia: 'Conforme a obra, Precios, Plano PH' },
-  { obra: 'Yatay 754 (FASECO)', avance: 88.24, pendientes: 4, dependencia: 'Conforme a obra, Cómputo, Guardas' },
+  { obra: 'Virasoro 325', avance: 91.18, pendientes: 3, dependencia: 'Conforme a obra, Lista precios, Plano PH' },
+  { obra: 'Yatay 754 (FASECO)', avance: 88.24, pendientes: 4, dependencia: 'Diversos cómputos y Plano PH' },
+  { obra: 'Hornos 2719', avance: 89.66, pendientes: 3, dependencia: 'Conforme a obra, Baldosa, Topo, Plano PH' },
+  { obra: 'Roca 1680 (Terrazas)', avance: 81.25, pendientes: 6, dependencia: 'Baldosas, Guardas, Precios, Iluminación, Plano PH' },
+  { obra: 'Roca 1636 (El Portal)', avance: 81.25, pendientes: 6, dependencia: 'Baldosas, Guardas, Precios, Iluminación, Plano PH' },
+  { obra: 'Valentín Gómez 4736/44', avance: 80.65, pendientes: 6, dependencia: 'Herrajes, Accesorios, Plano PH, otros' },
 ];
 
 // ── PORTFOLIO GENERAL ─────────────────────────────────────────────────────────
 export const portfolio = [
-  { estado: 'Activas', cantidad: 213, descripcion: 'Obras en ejecución / obra física' },
-  { estado: 'En Pozo', cantidad: null, descripcion: 'Obras no iniciadas / proyecto en carpeta' },
-  { estado: 'Finalizadas', cantidad: null, descripcion: 'Obras con fecha de entrega anterior al corte' },
-  { estado: 'Limbo / Desconocido', cantidad: null, descripcion: 'Sin datos claros — requieren revisión' },
+  { estado: 'Finalizadas', cantidad: 97, descripcion: 'Obras completamente terminadas' },
+  { estado: 'En curso', cantidad: 20, descripcion: 'Obras en ejecución activa' },
+  { estado: 'No arrancó', cantidad: 52, descripcion: 'Proyectos aún no iniciados' },
+  { estado: 'Limbo / Desconocido', cantidad: 56, descripcion: 'Sin estado definido — requieren revisión urgente' },
 ];
 
 // ── TOP 5 OBRAS POR UNIDADES ──────────────────────────────────────────────────
 export const topObras = [
-  { obra: 'El Portal de Roca', unidades: 124, cocheras: 111, entrega: '11/01/2026', estado: 'En obra' },
-  { obra: 'Hornos 2719', unidades: 88, cocheras: 34, entrega: '10/01/2026', estado: 'En obra' },
-  { obra: 'Belgrano 4664', unidades: 72, cocheras: 34, entrega: '10/01/2027', estado: 'En obra' },
-  { obra: 'Terrazas de Roca', unidades: 63, cocheras: 41, entrega: '12/01/2027', estado: 'En obra' },
-  { obra: 'Roca Prado 1670', unidades: 63, cocheras: 0, entrega: '11/01/2028', estado: 'En obra' },
+  { obra: 'Zafiro (Nordelta)', unidades: 162, cocheras: 0,   entrega: '01/12/2027', estado: 'En curso' },
+  { obra: 'Urquiza 4550',      unidades: 128, cocheras: 85,  entrega: '21/11/2028', estado: 'En curso' },
+  { obra: 'El Portal de Roca', unidades: 124, cocheras: 111, entrega: '11/11/2026', estado: 'En curso' },
+  { obra: 'Hornos 2719',       unidades: 88,  cocheras: 34,  entrega: '01/10/2026', estado: 'En curso' },
+  { obra: 'Valentín Gómez 4736', unidades: 84, cocheras: 46, entrega: '01/12/2027', estado: 'En curso' },
 ];
 
 // ── OBRAS CON ENTREGA VENCIDA O PRÓXIMA (<6 MESES) ───────────────────────────
 export const obrasEntregaProxima = [
-  { obra: 'Hornos 2719', entrega: '10/01/2026', estado: 'En obra', alerta: 'vencida' },
-  { obra: 'El Portal de Roca', entrega: '11/01/2026', estado: 'En obra', alerta: 'vencida' },
-];
-
-// ── OBRAS EN LIMBO ────────────────────────────────────────────────────────────
-export const obrasLimbo = [
-  'Murias 2264 (Tres de Febrero)',
-  'Santa Ana 839, 857 (Hurlingham)',
-  'Carlos Pellegrini 645/667 (Morón)',
-  'Av Rivadavia 15262 / 17412 / 15668 / 15672 (Morón)',
-  'Isabela La Católica 941 (Morón)',
-  'General Paz (sin ubicación precisa)',
+  { obra: 'Las Malvinas', entrega: '01/04/2026', estado: 'En curso', alerta: 'alta' },
+  { obra: 'Mitre 1185',   entrega: '01/04/2026', estado: 'En curso', alerta: 'alta' },
+  { obra: 'Virasoro 325', entrega: '01/09/2026', estado: 'En curso', alerta: 'media' },
 ];
 
 // ── DESCALCE AVANCE VS. VENDIDO ───────────────────────────────────────────────
-// tipoRiesgo: 'comercial' | 'operativo' | 'inconsistencia'
+// tipo: 'comercial' | 'operativo' | 'inconsistencia'
 export const descalces = [
-  { obra: 'Roca 1276', avance: 100, vendido: 26.19, descalce: 73.81, tipo: 'comercial' },
-  { obra: 'Urquiza 4550', avance: 33.33, vendido: 9.94, descalce: 23.39, tipo: 'comercial' },
-  { obra: 'América 347', avance: 100, vendido: 100.35, descalce: -0.35, tipo: 'inconsistencia' },
-  { obra: 'Valentín Gómez 4736', avance: 53.33, vendido: 76.34, descalce: -22.9, tipo: 'operativo' },
+  { obra: 'Roca 1276',         avance: 100,   vendido: 26.19, descalce: 73.81,  tipo: 'comercial' },
+  { obra: 'Bustillo 357',      avance: 29.17, vendido: 0,     descalce: 29.17,  tipo: 'operativo' },
+  { obra: 'Urquiza 4550',      avance: 33.33, vendido: 11.05, descalce: 22.28,  tipo: 'comercial' },
+  { obra: 'Valentín G. 4736',  avance: 53.33, vendido: 77.86, descalce: -24.53, tipo: 'operativo' },
 ];
 
 // ── KPIs — GESTORÍA ───────────────────────────────────────────────────────────
 export const kpisGestoria = [
-  { label: 'Obras bajo seguimiento', actual: 53, anterior: null, unidad: '', tendenciaBuena: 'neutral' },
-  { label: 'Obras con demoras', actual: 25, anterior: null, unidad: '', tendenciaBuena: 'down' },
-  { label: 'Estancadas >30 días', actual: 23, anterior: null, unidad: '', tendenciaBuena: 'down' },
-  { label: 'Alertas críticas', actual: 2, anterior: null, unidad: '', tendenciaBuena: 'down' },
-  { label: 'Atraso >90 días', actual: 7, anterior: null, unidad: '', tendenciaBuena: 'down' },
-  { label: 'Estancadas >90 días', actual: 8, anterior: null, unidad: '', tendenciaBuena: 'down' },
+  { label: 'Obras bajo seguimiento', actual: 60,  anterior: null, unidad: '', tendenciaBuena: 'neutral' },
+  { label: 'Obras con pasos atrasados', actual: 28, anterior: null, unidad: '', tendenciaBuena: 'down' },
+  { label: 'Estancadas >30 días', actual: 26,    anterior: null, unidad: '', tendenciaBuena: 'down' },
+  { label: 'Vencimientos próximos 14 días', actual: 4, anterior: null, unidad: '', tendenciaBuena: 'down' },
 ];
 
 // ── VENCIMIENTOS URGENTES ─────────────────────────────────────────────────────
 // urgencia: 'critica' | 'alta' | 'media'
 export const vencimientos = [
   {
-    obra: 'Justo J. de Urquiza 4638, Caseros',
-    paso: 'Paso 10 — Dibujo Plano',
-    fecha: '04/03/2026',
+    obra: 'Valentín Gómez 4736/44',
+    paso: 'Comodato firmado',
+    fecha: '17/03/2026',
+    responsable: 'Terrenos',
+    urgencia: 'critica',
+  },
+  {
+    obra: 'Carlos Pellegrini 645-667',
+    paso: 'Estudio de suelos',
+    fecha: '18/03/2026',
     responsable: 'Gestoría',
     urgencia: 'critica',
   },
   {
-    obra: 'Roca 1568, Hurlingham',
-    paso: 'Paso 2 — Escritura',
-    fecha: '14/03/2026',
+    obra: 'Wenceslao de Tata 4538',
+    paso: 'Posesión del terreno',
+    fecha: '20/03/2026',
     responsable: 'Terrenos',
-    urgencia: 'alta',
+    urgencia: 'critica',
+  },
+  {
+    obra: 'Buen Viaje 150, Morón',
+    paso: 'Posesión del terreno',
+    fecha: '20/03/2026',
+    responsable: 'Terrenos',
+    urgencia: 'critica',
   },
 ];
 
 // ── OBRAS CON ATRASO >90 DÍAS ─────────────────────────────────────────────────
 export const obrasAtraso90 = [
-  { obra: 'Gral. José de San Martín 451', paso: 'Paso 14: Visado Previo Ascensor', dias: 166, responsable: 'Municipio' },
-  { obra: 'Carlos Pellegrini 645-667', paso: 'Paso 6: Anteproyecto definido', dias: 165, responsable: 'Arquitectura' },
-  { obra: 'Buen Viaje 146', paso: 'Paso 3: Posesión terreno', dias: 161, responsable: 'Terrenos' },
-  { obra: 'MELIAN 7A/7B/7C/5B', paso: 'Paso 6: Anteproyecto definido', dias: 153, responsable: 'Arquitectura' },
-  { obra: 'San Martin 729', paso: 'Paso 2: Escritura simple', dias: 146, responsable: 'Terrenos' },
-  { obra: 'La Merced 4484', paso: 'Paso 6: Anteproyecto definido', dias: 108, responsable: 'Arquitectura' },
-  { obra: 'Manuel Quintana 762-766', paso: 'Paso 9: Servicios aprobados', dias: 105, responsable: 'Arquitectura' },
-  { obra: 'Gral. Paz 2690 — Granero', paso: 'Paso 6: Anteproyecto definido', dias: 102, responsable: 'Arquitectura' },
+  { obra: 'Virasoro 354, Morón',         paso: 'Trámite Gestoría',      dias: 191, responsable: 'Gestoría' },
+  { obra: 'Gral. José de San Martín 451', paso: 'Gestión Municipal',    dias: 178, responsable: 'Municipio' },
+  { obra: 'Buen Viaje 146, Morón',        paso: 'Posesión del terreno', dias: 173, responsable: 'Terrenos' },
+  { obra: 'Manuel Quintana 762-766',      paso: 'Gestión Municipal',    dias: 172, responsable: 'Municipio' },
+  { obra: 'MELIAN 7A/7B/7C/5B',           paso: 'Definición arquitectónica', dias: 165, responsable: 'Arquitectura' },
 ];
 
 // ── BLOQUEOS POR RESPONSABLE ──────────────────────────────────────────────────
 export const bloqueosPorResponsable = [
-  { responsable: 'Arquitectura', cantidad: 5, obras: 'Carlos Pellegrini 645-667, MELIAN 7A/7B, MELIAN ESQ. SAN RAMON, La Merced 4484, Manuel Quintana 762-766' },
-  { responsable: 'Terrenos', cantidad: 4, obras: 'Buen Viaje 146, San Martin 729, Roca 1568, Roca 2014 & Bocayuva' },
-  { responsable: 'Municipio', cantidad: 1, obras: 'Gral. José de San Martín 451' },
-  { responsable: 'Gestoría', cantidad: 1, obras: 'Justo J. de Urquiza 4638, Caseros' },
+  { responsable: 'Municipio',    cantidad: 2, obras: 'Gral. José de San Martín 451, Manuel Quintana 762-766' },
+  { responsable: 'Terrenos',     cantidad: 3, obras: 'Buen Viaje 146, San Martín 729, Virasoro 354' },
+  { responsable: 'Arquitectura', cantidad: 2, obras: 'MELIAN 7A/7B/7C/5B, MELIAN ESQ. SAN RAMON' },
+  { responsable: 'Gestoría',     cantidad: 1, obras: 'Virasoro 354' },
 ];
 
 // ── RIESGOS ───────────────────────────────────────────────────────────────────
 // probabilidad / impacto: 'alta' | 'media' | 'baja'
 export const riesgos = [
   {
-    riesgo: 'Incremento de pendientes en backlog anual (>10%)',
+    riesgo: '24.9% de obras en limbo (56/225)',
     probabilidad: 'alta',
     impacto: 'alta',
-    area: 'Arquitectura',
-    consecuencia: 'Saturación de recursos y desvío de plazos',
+    area: 'Proyectos / Planeamiento',
+    consecuencia: 'Imposibilidad de forecasting, riesgos financieros y operativos',
   },
   {
-    riesgo: 'Obras >80% bloqueadas por dependencias externas',
+    riesgo: 'Concentración geográfica >70% en Morón y Tres de Febrero',
     probabilidad: 'alta',
     impacto: 'alta',
-    area: 'Arquitectura / Interáreas',
-    consecuencia: 'Inflación de pipeline y penalizaciones contractuales',
+    area: 'Proyectos / Comercial',
+    consecuencia: 'Riesgo de portafolio ante incidentes o restricciones locales',
   },
   {
-    riesgo: 'Acumulación de stock (avance alto, ventas bajas)',
+    riesgo: '28 obras con pasos atrasados / 26 estancadas >30 días',
     probabilidad: 'alta',
     impacto: 'alta',
-    area: 'Comercial',
-    consecuencia: 'Liquidez y rentabilidad afectadas',
+    area: 'Arquitectura / Gestoría',
+    consecuencia: 'Parálisis operativa y riesgo de sanciones municipales',
   },
   {
-    riesgo: 'Obras con documentación incompleta o campos críticos confusos',
+    riesgo: 'Pipeline con fechas inconsistentes o sin asignar',
     probabilidad: 'media',
     impacto: 'alta',
-    area: 'Dirección',
-    consecuencia: 'Imposibilidad de control, riesgo de abandono',
+    area: 'Planeamiento',
+    consecuencia: 'Planificación errónea y uso ineficiente de recursos',
   },
   {
-    riesgo: 'Gestiones municipales con retraso >90 días',
-    probabilidad: 'alta',
-    impacto: 'alta',
-    area: 'Gestoría / Terrenos',
-    consecuencia: 'No inicio de obra, sobrecostos por inactividad',
-  },
-  {
-    riesgo: 'Concentración de bloqueos por responsables recurrentes',
-    probabilidad: 'alta',
-    impacto: 'media',
-    area: 'Primeras líneas',
-    consecuencia: 'Bottleneck sistémico, baja accountability',
-  },
-  {
-    riesgo: 'Problemas de priorización en avances (25/53 obras con demoras)',
+    riesgo: 'Entregas próximas sin preparación documental suficiente',
     probabilidad: 'media',
-    impacto: 'media',
-    area: 'Jefes de Producción',
-    consecuencia: 'Cronogramas incumplidos, reputación corporativa',
-  },
-  {
-    riesgo: 'Obras en limbo / estado "desconocido" (20+ casos)',
-    probabilidad: 'alta',
     impacto: 'alta',
-    area: 'Dirección',
-    consecuencia: 'Mal uso de recursos, imposibilidad de planificación',
+    area: 'Operaciones',
+    consecuencia: 'Riesgo de multas y daño reputacional ante clientes',
   },
 ];
 
@@ -228,71 +207,71 @@ export const riesgos = [
 export const planAccion = {
   h72: [
     {
-      accion: 'Auditar y atacar cuellos de botella de El Portal de Morón y Mitre 4872, Caseros',
-      porQue: 'Son las obras con más pendientes y menor avance',
-      areaLider: 'Producción',
-      kpi: '% avance en obras bajo 10%',
-      riesgoMitigado: 'Obras estancadas',
+      accion: 'Auditar y actualizar estado de las 56 obras en limbo',
+      porQue: 'Necesario para restablecer control operativo y financiero',
+      areaLider: 'Dirección de Proyectos',
+      kpi: '% obras con estado actualizado',
+      riesgoMitigado: 'Obras en limbo',
     },
     {
-      accion: 'Verificar vencimientos municipales urgentes (Urquiza 4638, Roca 1568)',
-      porQue: 'Evitar penalidades y demoras legales',
+      accion: 'Revisión de las 3 obras con entrega en próximos 6 meses',
+      porQue: 'Garantizar preparación documental y logística a tiempo',
+      areaLider: 'Operaciones',
+      kpi: 'Cumplimiento de entregas (%)',
+      riesgoMitigado: 'Entregas riesgosas',
+    },
+    {
+      accion: 'Reporte urgente a responsables de obras con atraso >90 días',
+      porQue: 'Evitar extensión de bloqueos críticos ya cronificados',
       areaLider: 'Gestoría',
-      kpi: 'Cumplimiento de trámites',
-      riesgoMitigado: 'Penalizaciones / atrasos legales',
-    },
-    {
-      accion: 'Revisión de dependencias no resueltas en obras >80% avance',
-      porQue: 'Eliminar bloqueos de flujo y liberar entregas',
-      areaLider: 'Arquitectura',
-      kpi: '% entregas a tiempo',
-      riesgoMitigado: 'Brecha entre avance y cierre',
+      kpi: 'Días promedio de atraso',
+      riesgoMitigado: 'Parálisis de trámites',
     },
   ],
   d30: [
     {
-      accion: 'Seguimiento semanal a obras >90% avance',
-      porQue: 'Acelerar cierres y evitar pile up',
-      areaLider: 'Producción',
-      kpi: 'Obras entregadas',
-      riesgoMitigado: 'Inflado de stock avanzado',
+      accion: 'Limpieza y depuración del pipeline de fechas',
+      porQue: 'Mejorar la proyección y asignación de recursos futuros',
+      areaLider: 'Planeamiento',
+      kpi: '% pipeline con fecha válida',
+      riesgoMitigado: 'Planificación errónea',
     },
     {
-      accion: 'Protocolo de cierre para ítems >2 meses sin avance',
-      porQue: 'Reducir backlog de ítems viejos',
-      areaLider: 'Arquitectura',
-      kpi: 'Backlog pendiente',
-      riesgoMitigado: 'Saturación / backlog crónico',
+      accion: 'Recoordinación con municipios y áreas responsables de trámites',
+      porQue: 'Acortar los pasos atrasados y destrabar gestiones crónicas',
+      areaLider: 'Gestión Pública',
+      kpi: 'N° de obras con pasos actualizados',
+      riesgoMitigado: 'Parálisis gestora',
     },
     {
-      accion: 'Reuniones quincenales de obras <10% avance',
-      porQue: 'Destrabar obras estancadas',
-      areaLider: 'Dirección / Producción',
-      kpi: '% obras bajo control',
-      riesgoMitigado: 'Obras rezagadas y sin control',
+      accion: 'Revisión comercial proactiva de top 5 obras con descalce',
+      porQue: 'Mejorar velocidad de ventas respecto al avance físico',
+      areaLider: 'Comercial',
+      kpi: 'Ratio venta/avance',
+      riesgoMitigado: 'Descalce ventas/avance',
     },
   ],
   d90: [
     {
-      accion: 'Auditoría y saneamiento de datos de obras "limbo"',
-      porQue: 'Mejorar calidad de información y control',
-      areaLider: 'Dirección',
-      kpi: '% obras con info auditada',
-      riesgoMitigado: 'Decisiones erróneas',
+      accion: 'Estrategia de diversificación geográfica de nuevos proyectos',
+      porQue: 'Disminuir la vulnerabilidad por concentración en dos localidades',
+      areaLider: 'Desarrollo de Negocios',
+      kpi: '% obras en nuevos municipios',
+      riesgoMitigado: 'Concentración geográfica',
     },
     {
-      accion: 'Implementar ritual de control semanal integral',
-      porQue: 'Mejor seguimiento y reactividad',
-      areaLider: 'Dirección',
-      kpi: 'Indicadores integrados',
-      riesgoMitigado: 'Riesgo sistémico',
+      accion: 'Implementar rutina mensual de control de obras en limbo',
+      porQue: 'Prevenir futuros desvíos informativos y pérdida de control',
+      areaLider: 'PM / QA',
+      kpi: '% obras limbo reportadas',
+      riesgoMitigado: 'Obras no monitoreadas',
     },
     {
-      accion: 'Campaña de cierre comercial en Roca 1276 y Urquiza 4550',
-      porQue: 'Reducir descalce avance/vendido y mejorar liquidez',
-      areaLider: 'Comercial',
-      kpi: '% vendido en obras avanzadas',
-      riesgoMitigado: 'Acumulación de stock',
+      accion: 'Destrabar obras cronificadas en backlog de arquitectura',
+      porQue: 'Recuperar velocidad global del portfolio y reducir estancamiento',
+      areaLider: 'Dirección de Proyectos',
+      kpi: 'Plazo medio de cierre de backlog',
+      riesgoMitigado: 'Backlog estructural',
     },
   ],
 };

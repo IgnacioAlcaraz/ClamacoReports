@@ -22,14 +22,15 @@ const AREAS = [
   { key: 'comercial', label: 'Comercial', data: comercial },
   { key: 'finanzas',  label: 'Finanzas',  data: finanzas },
   { key: 'cx',        label: 'CX',        data: cx },
+  { key: 'mapa',      label: 'Mapa de Incidencias', data: null },
 ];
 
 // ── Vista de Obras ────────────────────────────────────────────────────────────
 function ObrasReport({ d }) {
   const backlogChart = [
-    { name: 'Total ítems', anterior: 1334, actual: 1542 },
-    { name: 'Pendientes',  anterior: 1066, actual: 911 },
-    { name: 'Cerrados',    anterior: 0,    actual: 6 },
+    { name: 'Total ítems', anterior: 1621, actual: 1611 },
+    { name: 'Cerrados',    anterior: 0,    actual: 10 },
+    { name: 'Nuevos ing.', anterior: 0,    actual: 0 },
   ];
 
   return (
@@ -64,7 +65,7 @@ function ObrasReport({ d }) {
         />
       </SectionBlock>
 
-      <SectionBlock title="⚠️ Obras estancadas (Top 7)">
+      <SectionBlock title="⚠️ Obras estancadas (Top 6)">
         <DataTable
           columns={[
             { key: 'obra',        label: 'Obra' },
@@ -372,8 +373,8 @@ function ComercialReport({ d }) {
 // ── Vista de Finanzas ─────────────────────────────────────────────────────────
 function FinanzasReport({ d }) {
   const cobranzaChart = [
-    { name: 'Ene 2026', anterior: d.cobranzas?.promHistorico ?? 0, actual: d.cobranzas?.ene2026 ?? 0 },
     { name: 'Feb 2026', anterior: d.cobranzas?.promHistorico ?? 0, actual: d.cobranzas?.feb2026 ?? 0 },
+    { name: 'Mar 2026', anterior: d.cobranzas?.promHistorico ?? 0, actual: d.cobranzas?.mar2026 ?? 0 },
   ];
 
   const fmt = (n) => n != null ? `$${n.toLocaleString('es-AR')}` : '—';
@@ -462,20 +463,20 @@ function FinanzasReport({ d }) {
       <SectionBlock title="💰 Cobranzas — Resultado del período">
         <div className="kpi-grid">
           <div className="kpi-card">
-            <p className="kpi-label">Feb 2026</p>
-            <p className="kpi-value" style={{ color: '#dc2626' }}>{fmt(d.cobranzas?.feb2026)}</p>
+            <p className="kpi-label">Mar 2026</p>
+            <p className="kpi-value" style={{ color: '#dc2626' }}>{fmt(d.cobranzas?.mar2026)}</p>
           </div>
           <div className="kpi-card">
-            <p className="kpi-label">Ene 2026</p>
-            <p className="kpi-value">{fmt(d.cobranzas?.ene2026)}</p>
+            <p className="kpi-label">Feb 2026</p>
+            <p className="kpi-value">{fmt(d.cobranzas?.feb2026)}</p>
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Prom. histórico</p>
             <p className="kpi-value">{fmt(d.cobranzas?.promHistorico)}</p>
           </div>
           <div className="kpi-card">
-            <p className="kpi-label">Variación vs enero</p>
-            <p className="kpi-value" style={{ color: '#dc2626' }}>{d.cobranzas?.variacionVsEnero}%</p>
+            <p className="kpi-label">Variación vs histórico</p>
+            <p className="kpi-value" style={{ color: '#dc2626' }}>{d.cobranzas?.variacionVsHistorico}%</p>
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Pendiente total</p>
@@ -676,6 +677,28 @@ function CxReport({ d }) {
         </div>
       </SectionBlock>
 
+      <SectionBlock title="🌐 Tráfico Web — KPIs globales">
+        <div className="kpi-grid">
+          {(d.kpisTrafico || []).map((k, i) => <KpiCard key={i} {...k} />)}
+        </div>
+      </SectionBlock>
+
+      <SectionBlock title="📄 Análisis de landing pages" defaultOpen={false}>
+        <DataTable
+          columns={[
+            { key: 'landing',        label: 'Landing Page', width: '130px' },
+            { key: 'sesiones',       label: 'Sesiones', align: 'center', render: (v) => v.toLocaleString('es-AR') },
+            { key: 'pctTotal',       label: '% del total', align: 'center', render: (v) => `${v}%` },
+            { key: 'rebote',         label: '% Rebote', align: 'center', render: (v) => (
+              <span style={{ fontWeight: 700, color: v > 60 ? '#dc2626' : v > 40 ? '#ea580c' : '#16a34a' }}>{v}%</span>
+            )},
+            { key: 'engagement',     label: '% Engagement', align: 'center', render: (v) => `${v}%` },
+            { key: 'interpretacion', label: 'Interpretación' },
+          ]}
+          rows={d.landingPages || []}
+        />
+      </SectionBlock>
+
       <SectionBlock title="⚠️ Matriz de riesgos" defaultOpen={false}>
         <RiesgoTable riesgos={d.riesgos} />
       </SectionBlock>
@@ -683,6 +706,28 @@ function CxReport({ d }) {
       <SectionBlock title="🗂️ Plan de acción">
         <PlanAccion plan={d.planAccion} />
       </SectionBlock>
+
+      {d.conclusionMaestra && (
+        <SectionBlock title="📝 Conclusión maestra del reporte completo" defaultOpen={false}>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Síntesis por módulo</p>
+          <ul className="hallazgos-list" style={{ marginBottom: 16 }}>
+            {d.conclusionMaestra.modulos.map((m, i) => (
+              <li key={i}><strong>{m.modulo}:</strong> {m.resumen}</li>
+            ))}
+          </ul>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Riesgos sistémicos</p>
+          <ol className="hallazgos-list" style={{ marginBottom: 16 }}>
+            {d.conclusionMaestra.riesgosSistemicos.map((r, i) => <li key={i}>{r}</li>)}
+          </ol>
+          <p style={{ fontWeight: 600, marginBottom: 8 }}>Acciones prioritarias (30 días)</p>
+          <ol className="hallazgos-list" style={{ marginBottom: 16 }}>
+            {d.conclusionMaestra.accionesPrioritarias.map((a, i) => <li key={i}>{a}</li>)}
+          </ol>
+          <p style={{ color: '#4b5563', fontStyle: 'italic', fontSize: '0.9rem', lineHeight: 1.6 }}>
+            {d.conclusionMaestra.narrativa}
+          </p>
+        </SectionBlock>
+      )}
     </>
   );
 }
@@ -721,6 +766,17 @@ export default function ReportPage() {
         {activeArea === 'comercial' && <ComercialReport d={area.data} />}
         {activeArea === 'finanzas'  && <FinanzasReport  d={area.data} />}
         {activeArea === 'cx'        && <CxReport        d={area.data} />}
+        {activeArea === 'mapa'      && (
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <iframe
+              width="100%"
+              style={{ minHeight: '75vh', border: 0 }}
+              src="https://lookerstudio.google.com/embed/reporting/0b917ea2-a920-46a7-bf3e-8ad4faf00714/page/p_87b17rs5vd"
+allowFullScreen
+              sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+            />
+          </div>
+        )}
       </div>
     </div>
     </AppLayout>
