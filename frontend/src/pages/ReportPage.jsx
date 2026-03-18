@@ -315,23 +315,6 @@ function ComercialReport({ d }) {
         </div>
       </SectionBlock>
 
-      <SectionBlock title="🏢 Canal por inmobiliaria" defaultOpen={false}>
-        <DataTable
-          columns={[
-            { key: 'inmobiliaria',  label: 'Inmobiliaria' },
-            { key: 'boletos',       label: 'Boletos',   align: 'center' },
-            { key: 'reservas',      label: 'Reservas',  align: 'center', render: (v) => v ?? '—' },
-            { key: 'ratio',         label: 'Ratio conv.', align: 'center', render: (v) => (
-              <span style={{ fontWeight: 700, color: v < 50 ? '#dc2626' : v > 100 ? '#16a34a' : '#374151' }}>
-                {v}%
-              </span>
-            )},
-            { key: 'clasificacion', label: 'Clasificación' },
-          ]}
-          rows={d.canalInmobiliaria || []}
-        />
-      </SectionBlock>
-
       <SectionBlock title="✍️ Firma Boleto — KPIs de satisfacción">
         <div className="kpi-grid">
           {(d.kpisFirmaBoleto || []).map((k, i) => <KpiCard key={i} {...k} />)}

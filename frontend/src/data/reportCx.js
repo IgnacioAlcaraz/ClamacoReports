@@ -77,9 +77,21 @@ export const kpisTrafico = [
 
 // ── TRÁFICO WEB — LANDING PAGES ───────────────────────────────────────────────
 export const landingPages = [
-  { landing: '/',            sesiones: 15453, pctTotal: 43.7, rebote: 62.5, engagement: 37.5, interpretacion: 'Dominante pero vulnerable, alto rebote' },
-  { landing: '/hornos-2719', sesiones: 5359,  pctTotal: 15.1, rebote: 46.0, engagement: 54.0, interpretacion: 'Equilibrado, buena retención' },
-  { landing: '/proyectos',   sesiones: 26,    pctTotal: 0.07, rebote: 27.0, engagement: 73.0, interpretacion: 'Mejor performance, pero muy poco tráfico' },
+  { landing: '/',                    sesiones: 15893, pctTotal: 65.9, rebote: 64.6, engagement: 35.4, interpretacion: 'Dominante pero con alto rebote, prioridad de optimización' },
+  { landing: '/hornos-2719',         sesiones: 5107,  pctTotal: 21.2, rebote: 48.9, engagement: 51.1, interpretacion: 'Segundo destino más visitado, engagement equilibrado' },
+  { landing: '/terrazas-de-roca',    sesiones: 1899,  pctTotal: 7.9,  rebote: 53.0, engagement: 47.0, interpretacion: 'Tráfico relevante, rebote moderado' },
+  { landing: '/oficinas-roca-1276',  sesiones: 385,   pctTotal: 1.6,  rebote: 51.9, engagement: 48.1, interpretacion: 'Bajo tráfico, retención aceptable' },
+  { landing: '(not set)',            sesiones: 328,   pctTotal: 1.4,  rebote: 96.3, engagement: 3.7,  interpretacion: 'Tráfico no identificado, posible tráfico directo/bot' },
+  { landing: '/portal-de-roca',      sesiones: 81,    pctTotal: 0.3,  rebote: 51.9, engagement: 48.1, interpretacion: 'Muy bajo tráfico, retención equilibrada' },
+  { landing: '/yatay-754',           sesiones: 72,    pctTotal: 0.3,  rebote: 61.1, engagement: 38.9, interpretacion: 'Muy bajo tráfico, rebote moderado-alto' },
+  { landing: '/belgrano-4664',       sesiones: 70,    pctTotal: 0.3,  rebote: 54.3, engagement: 45.7, interpretacion: 'Muy bajo tráfico, engagement equilibrado' },
+  { landing: '/virasoro-325',        sesiones: 59,    pctTotal: 0.2,  rebote: 59.3, engagement: 40.7, interpretacion: 'Muy bajo tráfico, rebote moderado' },
+  { landing: '/las-malvinas',        sesiones: 58,    pctTotal: 0.2,  rebote: 69.0, engagement: 31.0, interpretacion: 'Muy bajo tráfico, alto rebote' },
+  { landing: '/abel-costa-761',      sesiones: 48,    pctTotal: 0.2,  rebote: 60.4, engagement: 39.6, interpretacion: 'Muy bajo tráfico, rebote moderado' },
+  { landing: '/urquiza-4550',        sesiones: 32,    pctTotal: 0.1,  rebote: 46.9, engagement: 53.1, interpretacion: 'Muy bajo tráfico, mejor retención del grupo' },
+  { landing: '/w-de-tata-4965',      sesiones: 31,    pctTotal: 0.1,  rebote: 61.3, engagement: 38.7, interpretacion: 'Muy bajo tráfico, alto rebote' },
+  { landing: '/proyectos',           sesiones: 27,    pctTotal: 0.1,  rebote: 22.2, engagement: 77.8, interpretacion: 'Mejor engagement del sitio, muy poco tráfico' },
+  { landing: '/valentin-gomez-4736', sesiones: 18,    pctTotal: 0.07, rebote: 38.9, engagement: 61.1, interpretacion: 'Muy bajo tráfico, buena retención' },
 ];
 
 // ── RIESGOS ───────────────────────────────────────────────────────────────────
