@@ -356,7 +356,6 @@ function ComercialReport({ d }) {
 // ── Vista de Finanzas ─────────────────────────────────────────────────────────
 function FinanzasReport({ d }) {
   const cobranzaChart = [
-    { name: 'Feb 2026', anterior: d.cobranzas?.promHistorico ?? 0, actual: d.cobranzas?.feb2026 ?? 0 },
     { name: 'Mar 2026', anterior: d.cobranzas?.promHistorico ?? 0, actual: d.cobranzas?.mar2026 ?? 0 },
   ];
 
@@ -448,10 +447,6 @@ function FinanzasReport({ d }) {
           <div className="kpi-card">
             <p className="kpi-label">Mar 2026</p>
             <p className="kpi-value" style={{ color: '#dc2626' }}>{fmt(d.cobranzas?.mar2026)}</p>
-          </div>
-          <div className="kpi-card">
-            <p className="kpi-label">Feb 2026</p>
-            <p className="kpi-value">{fmt(d.cobranzas?.feb2026)}</p>
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Prom. histórico</p>
