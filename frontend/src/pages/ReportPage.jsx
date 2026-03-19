@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
+import Chat from '../components/Chat.jsx';
 import { META } from '../data/reportMeta.js';
 
 // Componentes
@@ -739,20 +740,28 @@ export default function ReportPage() {
         ))}
       </div>
 
-      <div className="report-content">
-        {activeArea === 'obras'     && <ObrasReport     d={area.data} />}
-        {activeArea === 'comercial' && <ComercialReport d={area.data} />}
-        {activeArea === 'finanzas'  && <FinanzasReport  d={area.data} />}
-        {activeArea === 'cx'        && <CxReport        d={area.data} />}
-        {activeArea === 'mapa'      && (
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <iframe
-              width="100%"
-              style={{ minHeight: '75vh', border: 0 }}
-              src="https://lookerstudio.google.com/embed/reporting/0b917ea2-a920-46a7-bf3e-8ad4faf00714/page/p_87b17rs5vd"
-allowFullScreen
-              sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-            />
+      <div className="report-body">
+        <div className="report-content">
+          {activeArea === 'obras'     && <ObrasReport     d={area.data} />}
+          {activeArea === 'comercial' && <ComercialReport d={area.data} />}
+          {activeArea === 'finanzas'  && <FinanzasReport  d={area.data} />}
+          {activeArea === 'cx'        && <CxReport        d={area.data} />}
+          {activeArea === 'mapa'      && (
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+              <iframe
+                width="100%"
+                style={{ minHeight: '75vh', border: 0 }}
+                src="https://lookerstudio.google.com/embed/reporting/0b917ea2-a920-46a7-bf3e-8ad4faf00714/page/p_87b17rs5vd"
+                allowFullScreen
+                sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+              />
+            </div>
+          )}
+        </div>
+
+        {activeArea !== 'mapa' && (
+          <div className="report-chat-panel">
+            <Chat fixedArea={activeArea} />
           </div>
         )}
       </div>

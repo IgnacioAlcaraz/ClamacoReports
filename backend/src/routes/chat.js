@@ -62,7 +62,7 @@ router.post(
           username: req.user.username,
           area,
         }),
-        timeout: 30000,
+        timeout: 90000,
       });
 
       if (!n8nResponse.ok) {

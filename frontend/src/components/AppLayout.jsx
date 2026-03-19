@@ -13,9 +13,6 @@ export default function AppLayout({ children, scrollable = false }) {
             <span className="logo-text">Clamaco</span>
           </div>
           <nav className="topbar-nav">
-            <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`} end>
-              Chats IA
-            </NavLink>
             <NavLink to="/reporte" className={({ isActive }) => `nav-link ${isActive ? 'nav-link--active' : ''}`}>
               Reporte
             </NavLink>

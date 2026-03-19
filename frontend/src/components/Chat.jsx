@@ -15,16 +15,41 @@ function generateSessionId() {
   return window.crypto.randomUUID().replace(/-/g, '');
 }
 
-export default function Chat() {
+// Inicializa sessionIds y mensajes vacíos por área
+function initPerArea() {
+  return Object.fromEntries(AREAS.map((a) => [a.value, []]));
+}
+function initSessionIds() {
+  return Object.fromEntries(AREAS.map((a) => [a.value, generateSessionId()]));
+}
+
+export default function Chat({ fixedArea } = {}) {
   const { user, logout } = useAuth();
-  const [area, setArea] = useState(AREAS[0].value);
-  const [messages, setMessages] = useState([]);
+  const [area, setArea] = useState(fixedArea ?? AREAS[0].value);
+  const [messagesMap, setMessagesMap] = useState(initPerArea);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
-  const sessionIdRef = useRef(generateSessionId());
+  const sessionIds = useRef(initSessionIds());
   const bottomRef = useRef(null);
   const textareaRef = useRef(null);
+
+  const messages = messagesMap[area] ?? [];
+
+  const setMessages = (updater) => {
+    setMessagesMap((prev) => ({
+      ...prev,
+      [area]: typeof updater === 'function' ? updater(prev[area] ?? []) : updater,
+    }));
+  };
+
+  // Sincroniza área cuando cambia fixedArea (sin borrar historial)
+  useEffect(() => {
+    if (fixedArea && fixedArea !== area) {
+      setArea(fixedArea);
+      setError('');
+    }
+  }, [fixedArea]);
 
   // Si la sesión se recuperó por cookie pero la clave de encriptación no está en memoria,
   // forzar re-login para obtenerla (la clave nunca persiste entre recargas)
@@ -38,12 +63,10 @@ export default function Chat() {
     );
   }
 
-  // Cuando cambia el área, nueva sesión
+  // Cuando cambia el área (selector libre), mantiene historial pero cambia área activa
   function handleAreaChange(e) {
     setArea(e.target.value);
-    setMessages([]);
     setError('');
-    sessionIdRef.current = generateSessionId();
   }
 
   // Scroll al último mensaje
@@ -61,7 +84,7 @@ export default function Chat() {
     setSending(true);
 
     try {
-      const { reply } = await chatApi.send(area, text, sessionIdRef.current);
+      const { reply } = await chatApi.send(area, text, sessionIds.current[area]);
       setMessages((prev) => [...prev, { role: 'bot', content: reply }]);
     } catch (err) {
       setError(err.message || 'Error al enviar el mensaje');
@@ -84,30 +107,32 @@ export default function Chat() {
 
   return (
     <div className="chat-container">
-      {/* Selector de área */}
-      <div className="area-bar">
-        <label htmlFor="area-select" className="area-label">Área:</label>
-        <select
-          id="area-select"
-          value={area}
-          onChange={handleAreaChange}
-          className="area-select"
-          disabled={sending}
-        >
-          {AREAS.map((a) => (
-            <option key={a.value} value={a.value}>
-              {a.label}
-            </option>
-          ))}
-        </select>
-        <span className="area-badge">{selectedArea?.label}</span>
-      </div>
+      {/* Selector de área — solo si no está fijada */}
+      {!fixedArea && (
+        <div className="area-bar">
+          <label htmlFor="area-select" className="area-label">Área:</label>
+          <select
+            id="area-select"
+            value={area}
+            onChange={handleAreaChange}
+            className="area-select"
+            disabled={sending}
+          >
+            {AREAS.map((a) => (
+              <option key={a.value} value={a.value}>
+                {a.label}
+              </option>
+            ))}
+          </select>
+          <span className="area-badge">{selectedArea?.label}</span>
+        </div>
+      )}
 
       {/* Mensajes */}
       <div className="messages-list" role="log" aria-live="polite">
         {messages.length === 0 && (
           <div className="empty-state">
-            <p>Selecciona un área y escribe tu mensaje para empezar.</p>
+            <p>Escribí tu mensaje para empezar.</p>
           </div>
         )}
 
