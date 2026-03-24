@@ -7,130 +7,143 @@ export const semaforo = [
   {
     subarea: 'Postventa',
     estado: 'Mejorando',
-    color: 'green',
-    metrica: 'Tasa de resolución 3.00x (Marzo 2026)',
-    umbral: '>1.0 indica reducción de backlog',
+    color: 'yellow',
+    metrica: 'Tasa resolución 1.93x (Marzo) vs 0.93x (Febrero)',
+    umbral: 'Umbral de mejora: ≥1.5x',
   },
   {
     subarea: 'Encuesta Postventa',
-    estado: 'Satisfactoria',
-    color: 'green',
-    metrica: '79.2% conforme / 69.8% atención "muy buena"',
-    umbral: '>70% conforme es satisfactorio',
+    estado: 'Satisfactoria con áreas críticas',
+    color: 'yellow',
+    metrica: '79.2% conformidad, 22.6% insatisfechos con rapidez',
+    umbral: 'Umbral conformidad: ≥80%',
   },
   {
     subarea: 'Tráfico Web',
-    estado: 'Peligro',
-    color: 'yellow',
-    metrica: 'Rebote página principal 62.5% / engagement -11.6%',
-    umbral: '>60% rebote y caída >10% engagement = Amarillo',
+    estado: 'Débil en engagement',
+    color: 'red',
+    metrica: 'Rebote página "/" 65.85%, engagement 34.15%',
+    umbral: 'Umbral rebote <40%, engagement >50%',
   },
 ];
 
 // ── HALLAZGOS PRINCIPALES ─────────────────────────────────────────────────────
 export const hallazgos = [
-  'Tasa de resolución de postventa acelerada: en marzo 2026 la tasa de resoluciones superó ampliamente los casos entrantes (3.00x), reduciendo el stock de reclamos a 57 activos.',
-  'Satisfacción cliente robusta pero frágil en ciertos segmentos: 79.2% de conformidad y 71.7% con tiempo de resolución esperado, pero un 18.9% insatisfecho constituye un riesgo de reputación latente.',
-  'Presión digital por experiencia deficiente en la landing principal: altísima tasa de rebote (62.5%) y caída de engagement (-11.6%) limitan la conversión de leads y la satisfacción global.',
+  'El desempeño de postventa está en etapa de mejora, aunque persisten casuísticas antiguas y focos críticos no resueltos en rubros/obras específicas.',
+  'Existe una mayoría satisfecha en la encuesta postventa, pero casi 1 de cada 4 clientes expresa alguna insatisfacción, sobre todo por lentitud en la resolución.',
+  'La experiencia digital es inconsistente: la home muestra desinterés (alto rebote), mientras otras páginas puntuales prueban alto engagement, reforzando una oportunidad no explotada para fidelización.',
 ];
 
 // ── POSTVENTA — KPIs GLOBALES ─────────────────────────────────────────────────
 export const kpisPostventa = [
-  { label: 'Reclamos activos',         actual: 57,   anterior: null, unidad: '',  tendenciaBuena: 'down' },
-  { label: 'En proceso',               actual: 19,   anterior: null, unidad: '',  tendenciaBuena: 'down' },
-  { label: 'Cerrados históricos',      actual: 726,  anterior: 639,  unidad: '',  tendenciaBuena: 'up' },
-  { label: 'Tasa resolución (Mar 26)', actual: 3.00, anterior: 0.93, unidad: 'x', tendenciaBuena: 'up' },
+  { label: 'Activos totales',           actual: 62,   anterior: 88,   unidad: '',  tendenciaBuena: 'down' },
+  { label: 'En proceso',                actual: 18,   anterior: null, unidad: '',  tendenciaBuena: 'down' },
+  { label: 'Cerrados históricos',       actual: 735,  anterior: null, unidad: '',  tendenciaBuena: 'up'   },
+  { label: 'Total procesados',          actual: 797,  anterior: null, unidad: '',  tendenciaBuena: 'up'   },
+  { label: 'Reducción neta (Mar.)',      actual: -26,  anterior: 2,    unidad: '',  tendenciaBuena: 'down' },
+  { label: 'Tasa resolución (Mar. 26)', actual: 1.93, anterior: 0.93, unidad: 'x', tendenciaBuena: 'up'   },
 ];
 
 // ── EVOLUCIÓN MENSUAL ─────────────────────────────────────────────────────────
 export const evolucionMensual = [
-  { mes: 'Febrero 2026', entrados: 29, salidos: 27, tasa: 0.93, neto: -2,  interpretacion: 'Preocupante: resolución menor que ingresos' },
-  { mes: 'Marzo 2026',   entrados: 14, salidos: 42, tasa: 3.00, neto: -28, interpretacion: 'Mejor mes: backlog disminuye claramente' },
+  { mes: 'Enero 2026',  entrados: 27, salidos: 56, tasa: 2.07, neto: -29, interpretacion: 'Drenado importante de backlog gracias a doble tasa de cierre' },
+  { mes: 'Febrero 2026',entrados: 29, salidos: 27, tasa: 0.93, neto: 2,   interpretacion: 'Se enlenteció, balanceado, sin reducción neta'                },
+  { mes: 'Marzo 2026',  entrados: 28, salidos: 54, tasa: 1.93, neto: -26, interpretacion: 'Recuperación clara en velocidad de resolución'                },
 ];
 
 // ── CASOS CRÍTICOS POR ANTIGÜEDAD ─────────────────────────────────────────────
 export const casosCriticos = [
-  { reclamo: 'N/D', obra: 'Yatay y Pellegrini', diasAbierto: 656, estado: 'Abierto' },
+  { reclamo: '001 (más antiguo)', obra: 'Yatay y Pellegrini', diasAbierto: 664,  estado: 'Pendiente' },
+  { reclamo: '002',               obra: 'Montella',           diasAbierto: 365,  estado: 'Pendiente' },
 ];
 
 // ── RANKING DE RUBROS POR VOLUMEN ─────────────────────────────────────────────
 export const rubrosPorVolumen = [
-  { rubro: 'Humedad y Filtraciones', cantidad: 232, pct: 29.6, prioridad: 1 },
-  { rubro: 'Otros',                  cantidad: 202, pct: 25.8, prioridad: 2 },
+  { rubro: 'Estructura y Mampostería', cantidad: 56,   pct: 90.3, prioridad: 1 },
+  { rubro: 'Humedad y Filtraciones',   cantidad: null, pct: null, prioridad: 2 },
+];
+
+// ── MATRIZ OBRA vs. RUBRO ─────────────────────────────────────────────────────
+export const matrizObraRubro = [
+  { obra: 'América',           rubro: 'Estructura y Mampostería', volumen: 56   },
+  { obra: 'San Martín 861',    rubro: 'Humedad y Filtraciones',   volumen: null },
+  { obra: 'Yatay y Pellegrini',rubro: null,                       volumen: null },
+  { obra: 'Montella',          rubro: null,                       volumen: null },
 ];
 
 // ── ENCUESTA POSTVENTA — KPIs ─────────────────────────────────────────────────
 export const kpisEncuesta = [
-  { label: 'Total respuestas',                actual: 53,   anterior: 52,   unidad: '',  tendenciaBuena: 'up' },
-  { label: 'Conformidad con servicio ("Sí")', actual: 79.2, anterior: 78.8, unidad: '%', tendenciaBuena: 'up' },
-  { label: 'No conformes ("No")',             actual: 18.9, anterior: 19.2, unidad: '%', tendenciaBuena: 'down' },
-  { label: 'Atención "Muy Buena"',            actual: 69.8, anterior: 69.2, unidad: '%', tendenciaBuena: 'up' },
-  { label: 'Tiempo resolución cumplido',      actual: 71.7, anterior: 71.2, unidad: '%', tendenciaBuena: 'up' },
+  { label: 'Total respuestas',                 actual: 53,   anterior: null, unidad: '',  tendenciaBuena: 'up'   },
+  { label: 'Conformidad general ("Sí")',        actual: 79.2, anterior: null, unidad: '%', tendenciaBuena: 'up'   },
+  { label: 'Tiempo resolución cumple ("Sí")',   actual: 71.7, anterior: null, unidad: '%', tendenciaBuena: 'up'   },
+  { label: 'Satisfacción "Muy Buena"',          actual: 69.8, anterior: null, unidad: '%', tendenciaBuena: 'up'   },
+  { label: 'Motivo contacto: Instalaciones',    actual: 26.4, anterior: null, unidad: '%', tendenciaBuena: 'down' },
+  { label: 'Insatisfechos con demoras',         actual: 22.6, anterior: null, unidad: '%', tendenciaBuena: 'down' },
 ];
 
 // ── TRÁFICO WEB — KPIs GLOBALES ───────────────────────────────────────────────
 export const kpisTrafico = [
-  { label: 'Vistas totales',       actual: 35387, anterior: 34934, unidad: '',  tendenciaBuena: 'up' },
-  { label: 'Usuarios activos',     actual: 23208, anterior: 22576, unidad: '',  tendenciaBuena: 'up' },
-  { label: 'Engagement time (seg)', actual: 23,   anterior: 26,    unidad: 's', tendenciaBuena: 'up' },
+  { label: 'Vistas totales',        actual: 34648, anterior: null, unidad: '',  tendenciaBuena: 'up' },
+  { label: 'Usuarios activos',      actual: 22614, anterior: null, unidad: '',  tendenciaBuena: 'up' },
+  { label: 'Engagement time (seg)', actual: 19,    anterior: null, unidad: 's', tendenciaBuena: 'up' },
 ];
 
 // ── TRÁFICO WEB — LANDING PAGES ───────────────────────────────────────────────
 export const landingPages = [
-  { landing: '/',                    sesiones: 15893, pctTotal: 65.9, rebote: 64.6, engagement: 35.4, interpretacion: 'Dominante pero con alto rebote, prioridad de optimización' },
-  { landing: '/hornos-2719',         sesiones: 5107,  pctTotal: 21.2, rebote: 48.9, engagement: 51.1, interpretacion: 'Segundo destino más visitado, engagement equilibrado' },
-  { landing: '/terrazas-de-roca',    sesiones: 1899,  pctTotal: 7.9,  rebote: 53.0, engagement: 47.0, interpretacion: 'Tráfico relevante, rebote moderado' },
-  { landing: '/oficinas-roca-1276',  sesiones: 385,   pctTotal: 1.6,  rebote: 51.9, engagement: 48.1, interpretacion: 'Bajo tráfico, retención aceptable' },
-  { landing: '(not set)',            sesiones: 328,   pctTotal: 1.4,  rebote: 96.3, engagement: 3.7,  interpretacion: 'Tráfico no identificado, posible tráfico directo/bot' },
-  { landing: '/portal-de-roca',      sesiones: 81,    pctTotal: 0.3,  rebote: 51.9, engagement: 48.1, interpretacion: 'Muy bajo tráfico, retención equilibrada' },
-  { landing: '/yatay-754',           sesiones: 72,    pctTotal: 0.3,  rebote: 61.1, engagement: 38.9, interpretacion: 'Muy bajo tráfico, rebote moderado-alto' },
-  { landing: '/belgrano-4664',       sesiones: 70,    pctTotal: 0.3,  rebote: 54.3, engagement: 45.7, interpretacion: 'Muy bajo tráfico, engagement equilibrado' },
-  { landing: '/virasoro-325',        sesiones: 59,    pctTotal: 0.2,  rebote: 59.3, engagement: 40.7, interpretacion: 'Muy bajo tráfico, rebote moderado' },
-  { landing: '/las-malvinas',        sesiones: 58,    pctTotal: 0.2,  rebote: 69.0, engagement: 31.0, interpretacion: 'Muy bajo tráfico, alto rebote' },
-  { landing: '/abel-costa-761',      sesiones: 48,    pctTotal: 0.2,  rebote: 60.4, engagement: 39.6, interpretacion: 'Muy bajo tráfico, rebote moderado' },
-  { landing: '/urquiza-4550',        sesiones: 32,    pctTotal: 0.1,  rebote: 46.9, engagement: 53.1, interpretacion: 'Muy bajo tráfico, mejor retención del grupo' },
-  { landing: '/w-de-tata-4965',      sesiones: 31,    pctTotal: 0.1,  rebote: 61.3, engagement: 38.7, interpretacion: 'Muy bajo tráfico, alto rebote' },
-  { landing: '/proyectos',           sesiones: 27,    pctTotal: 0.1,  rebote: 22.2, engagement: 77.8, interpretacion: 'Mejor engagement del sitio, muy poco tráfico' },
-  { landing: '/valentin-gomez-4736', sesiones: 18,    pctTotal: 0.07, rebote: 38.9, engagement: 61.1, interpretacion: 'Muy bajo tráfico, buena retención' },
+  { landing: '/',                    sesiones: 16967, pctTotal: 49.0,  rebote: 65.85, engagement: 34.15, interpretacion: 'Página principal: recibe mayor tráfico, engagement bajo y rebote alto'  },
+  { landing: '/hornos-2719',         sesiones: 4408,  pctTotal: 12.7,  rebote: 54.04, engagement: 45.96, interpretacion: 'Segundo flujo: moderado interés, resultado aceptable'                    },
+  { landing: '/terrazas-de-roca',    sesiones: 1899,  pctTotal: 7.9,   rebote: 53.0,  engagement: 47.0,  interpretacion: 'Tráfico relevante, rebote moderado'                                      },
+  { landing: '/oficinas-roca-1276',  sesiones: 385,   pctTotal: 1.6,   rebote: 51.9,  engagement: 48.1,  interpretacion: 'Bajo tráfico, retención aceptable'                                       },
+  { landing: '(not set)',            sesiones: 328,   pctTotal: 1.4,   rebote: 96.3,  engagement: 3.7,   interpretacion: 'Tráfico no identificado, posible directo o bot'                          },
+  { landing: '/portal-de-roca',      sesiones: 81,    pctTotal: 0.3,   rebote: 51.9,  engagement: 48.1,  interpretacion: 'Muy bajo tráfico, retención equilibrada'                                  },
+  { landing: '/yatay-754',           sesiones: 72,    pctTotal: 0.3,   rebote: 61.1,  engagement: 38.9,  interpretacion: 'Muy bajo tráfico, rebote moderado-alto'                                   },
+  { landing: '/belgrano-4664',       sesiones: 70,    pctTotal: 0.3,   rebote: 54.3,  engagement: 45.7,  interpretacion: 'Muy bajo tráfico, engagement equilibrado'                                 },
+  { landing: '/virasoro-325',        sesiones: 59,    pctTotal: 0.2,   rebote: 59.3,  engagement: 40.7,  interpretacion: 'Muy bajo tráfico, rebote moderado'                                        },
+  { landing: '/las-malvinas',        sesiones: 58,    pctTotal: 0.2,   rebote: 69.0,  engagement: 31.0,  interpretacion: 'Muy bajo tráfico, alto rebote'                                            },
+  { landing: '/abel-costa-761',      sesiones: 48,    pctTotal: 0.2,   rebote: 60.4,  engagement: 39.6,  interpretacion: 'Muy bajo tráfico, rebote moderado'                                        },
+  { landing: '/urquiza-4550',        sesiones: 32,    pctTotal: 0.1,   rebote: 46.9,  engagement: 53.1,  interpretacion: 'Muy bajo tráfico, mejor retención del grupo'                              },
+  { landing: '/w-de-tata-4965',      sesiones: 31,    pctTotal: 0.1,   rebote: 61.3,  engagement: 38.7,  interpretacion: 'Muy bajo tráfico, alto rebote'                                            },
+  { landing: '/proyectos',           sesiones: 27,    pctTotal: 0.1,   rebote: 19.05, engagement: 80.95, interpretacion: 'Alta relevancia puntual, oportunidad de escalar — mejor engagement del sitio'},
+  { landing: '/valentin-gomez-4736', sesiones: 18,    pctTotal: 0.07,  rebote: 38.9,  engagement: 61.1,  interpretacion: 'Muy bajo tráfico, buena retención'                                        },
 ];
 
 // ── RIESGOS ───────────────────────────────────────────────────────────────────
 // probabilidad / impacto: 'alta' | 'media' | 'baja'
 export const riesgos = [
   {
-    riesgo: 'Persistencia de backlog en reclamos antiguos (casos >656 días)',
-    probabilidad: 'media',
+    riesgo: 'Persistencia de casos antiguos (>365 días abiertos)',
+    probabilidad: 'alta',
     impacto: 'alta',
-    area: 'Operaciones / Postventa',
-    consecuencia: 'Daño reputacional sostenido y riesgo de litigios',
+    area: 'Postventa / Operaciones',
+    consecuencia: 'Daño a reputación, judicialización y escrache público',
   },
   {
-    riesgo: 'Segmento insatisfecho estable (18.9% no conforme)',
-    probabilidad: 'media',
-    impacto: 'media',
-    area: 'Postventa / Comercial',
-    consecuencia: 'Genera detractores que erosionan recomendación y ventas futuras',
+    riesgo: 'Poca integración entre experiencia digital y postventa',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Marketing / Postventa',
+    consecuencia: 'Frustración del cliente y fuga de potenciales contactos',
   },
   {
-    riesgo: 'Rebote alto (62.5%) y caída de engagement web (-11.6%)',
+    riesgo: 'Insatisfacción relevante con tiempos de resolución (22.6%)',
+    probabilidad: 'alta',
+    impacto: 'alta',
+    area: 'Postventa',
+    consecuencia: 'Reputación negativa, NPS deteriorado y pérdida de referenciaciones',
+  },
+  {
+    riesgo: 'Gaps en base de datos y cruces analíticos',
     probabilidad: 'alta',
     impacto: 'media',
-    area: 'Marketing / Digital',
-    consecuencia: 'Limita generación de leads calificados y percepción de marca digital',
+    area: 'IT / Gestión',
+    consecuencia: 'Acciones poco específicas y baja efectividad de intervenciones',
   },
   {
-    riesgo: 'Inconsistencia en asignación de responsables de reclamos',
+    riesgo: 'Concentración de reclamos en obras críticas (América: 56 reclamos)',
     probabilidad: 'media',
-    impacto: 'media',
-    area: 'Operaciones',
-    consecuencia: 'Cuello de botella persistente y dificultad de reacción ágil',
-  },
-  {
-    riesgo: 'Muestra limitada y posible error metodológico en encuesta (53 casos)',
-    probabilidad: 'media',
-    impacto: 'media',
-    area: 'Comercial / CX',
-    consecuencia: 'Ceguera estratégica: no permite segmentar oportunidades de mejora',
+    impacto: 'alta',
+    area: 'Obras / Postventa',
+    consecuencia: 'Reputación localmente deteriorada y ralentización comercial',
   },
 ];
 
@@ -139,114 +152,107 @@ export const conclusionMaestra = {
   modulos: [
     {
       modulo: 'Obras',
-      resumen: 'Subsisten focos de reclamos antiguos, especialmente en "Yatay y Pellegrini" y "San Martín 861", donde patologías de humedad demandan atención prioritaria.',
+      resumen: 'Capacidad productiva robusta pero con focos de patologías reiteradas en rubros "Estructura" y "Humedad" en obras críticas ("América", "San Martín 861", "Yatay y Pellegrini"). Brechas en supervisión y cierre de trabajos de detalle.',
     },
     {
       modulo: 'Comercial',
-      resumen: 'La percepción de calidad postventa se mantiene robusta (79.2% satisfacción), aunque persisten focos de insatisfacción ligados a demoras. El canal digital crece en tráfico pero requiere intervención para traducir visitas en conversión.',
+      resumen: 'Estrategias de captación con resultados estables, pero ciclo de venta largo y presión sobre soporte postventa. Falta profundizar el canal digital y disminuir dependencia del canal presencial.',
     },
     {
       modulo: 'Finanzas',
-      resumen: 'Dato no disponible en el documento fuente.',
+      resumen: 'Saneamiento progresivo del flujo operativo, equilibrio en caja, pero presión futura por contingencias de postventa no resueltas y potenciales litigios.',
     },
     {
       modulo: 'CX',
-      resumen: 'Tasa de resolución supera ingreso de incidentes (3.00x marzo), bajando stock activo; sin embargo, segmentos insatisfechos y cuellos de botella técnicos pueden minar la fidelidad si no se actúa con inmediatez.',
+      resumen: 'Mejora tangible en tasa de resolución, mayoría de clientes satisfechos, pero mediana profundidad digital y concentración de problemas en rubros estratégicos; riesgo digital por desconexión web-contacto y calidad dispareja de datos.',
     },
   ],
   riesgosSistemicos: [
-    'Persistencia de reclamos antiguos: casos sin resolución en años (>656 días) perpetúan daño reputacional.',
-    'Concentración de insatisfacción en ciertos rubros: alta incidencia en "Humedad y filtraciones"/instalaciones refleja fragilidad en calidad constructiva.',
-    'Desalineación entre experiencia digital y real: alto rebote web indica inconsistencia en la propuesta de valor de marca.',
-    'Deficiente trazabilidad: falta de información actualizada sobre responsables genera ceguera operativa.',
-    'Segmento insatisfecho persistente: el 18.9% no conforme puede convertirse en fuente de reputación negativa.',
+    'Persistencia de patologías técnicas crónicas: fallas en rubros críticos saturan postventa, elevan backlog y afectan encuestas y reputación.',
+    'Desintegración analítica y gaps de datos: falta de granularidad impide foco y acción efectiva, generando recursos desperdiciados.',
+    'Experiencia digital insuficiente: web generalista con alto rebote, escasa trazabilidad a canal postventa y pérdida de compradores jóvenes.',
+    'Lentitud en resolución: faltan recursos y protocolos ágiles para casos crónicos, generando frustración y reiteración de quejas.',
+    'Concentración de riesgo geográfico: obras críticas con volumen desproporcionado de incidentes generan viralización y foco negativo local.',
   ],
   accionesPrioritarias: [
-    'Resolver backlog histórico asignando responsables visibles y acelerando cierre de casos antiguos.',
-    'Rediseñar e intervenir procesos sobre rubros y obras de mayor volumen de reclamos ("Humedad y filtraciones", "San Martín 861", "Yatay y Pellegrini").',
-    'Capacitar a fondo equipos de postventa y mantenimiento para elevar calidad y rapidez de respuestas.',
-    'Rediseñar la landing principal del sitio, alineando experiencia digital con los valores y servicio prometidos.',
-    'Implementar seguimiento proactivo y cruzar sistemáticamente resultados de postventa, encuestas y analytics.',
+    'Implementar auditoría y resolución prioritaria para reclamos de >365 días y rubros de alta concentración.',
+    'Integrar dataset cruzado en encuestas y dashboards con variables obra/rubro/usuario para focalizar gestión.',
+    'Rediseñar urgentemente la página principal web y rutas de tráfico, con énfasis en reducción de rebote digital.',
+    'Desarrollar programa de capacitación y mejora técnica en patologías de "Estructura y Mampostería" y "Humedad y Filtraciones".',
+    'Iniciar feedback estructurado y seguimiento activo post-reparación en todos los casos críticos y de complejidad técnica.',
   ],
-  narrativa: 'La empresa se encuentra en un punto de equilibrio precario, con logros concretos en reducción de backlog y satisfacción visible en mayoría de clientes, pero expuesta a riesgos significativos de reputación y eficiencia operativa. Las tensiones detectadas —en procesos no automatizados, segmentos insatisfechos y la desconexión experiencia digital-real— requieren soluciones de raíz y gobernanza más integrada y ágil.',
+  narrativa: 'La empresa mantiene una estructura operativa sólida y capacidad reactiva en mejora. Sin embargo, sufre tensiones previsibles en obras y rubros heredados. El diferencial competitivo depende de su aptitud para atacar quirúrgicamente los problemas crónicos de calidad y lentitud, digitalizar su experiencia usuario-cliente y lograr una integración analítica —hoy limitada— de toda la cadena de entrega, servicio y soporte. Recomendamos al Directorio declarar la calidad técnica y la experiencia digital como motores de la estrategia 2026.',
 };
 
 // ── PLAN DE ACCIÓN ────────────────────────────────────────────────────────────
 export const planAccion = {
   h72: [
     {
-      accion: 'Contactar proactivamente a los clientes insatisfechos del último mes',
-      porQue: 'Ataque inmediato al 18.9% de insatisfacción para evitar daño reputacional',
+      accion: 'Auditar y priorizar casos >365 días abiertos',
+      porQue: 'Son foco reputacional, judicial y reflejado en encuesta',
       areaLider: 'Postventa',
-      kpi: '% clientes conformes',
-      riesgoMitigado: 'Segmento insatisfecho reputacional',
+      kpi: 'Reducción antigüedad promedio de reclamos',
+      riesgoMitigado: 'Reputación y judicialización',
     },
     {
-      accion: 'Auditar casos abiertos >365 días y asignar responsable explícito',
-      porQue: 'Casos antiguos impactan reputación y confianza del comprador',
-      areaLider: 'Operaciones',
-      kpi: 'Stock reclamos antiguos',
-      riesgoMitigado: 'Persistencia de backlog',
+      accion: 'Lanzar entrenamiento flash sobre resolución de humedad',
+      porQue: '26.4% de motivos de contacto; señalado en reclamos y encuesta postventa',
+      areaLider: 'Obras / Postventa',
+      kpi: 'Velocidad de resolución en rubros de humedad',
+      riesgoMitigado: 'Saturación operativa e insatisfacción en reparaciones',
     },
     {
-      accion: 'Revisar copy y UX de la landing principal del sitio web',
-      porQue: 'Alto rebote (62.5%) con oportunidad de mejora temprana y bajo costo',
-      areaLider: 'Marketing / Digital',
-      kpi: 'Engagement y tasa de rebote',
-      riesgoMitigado: 'Baja conversión web',
+      accion: 'Comunicación transparente a clientes críticos',
+      porQue: 'Mejorar percepción y evitar viralización de insatisfacción',
+      areaLider: 'Comercial',
+      kpi: 'Satisfacción en segmentos de riesgo',
+      riesgoMitigado: 'Disparidad entre KPIs y percepción del cliente',
     },
   ],
   d30: [
     {
-      accion: 'Implementar capacitación técnica intensiva de mantenimiento',
-      porQue: 'Encuesta revela falencias en técnica y rapidez de resolución',
-      areaLider: 'Postventa / Recursos Humanos',
-      kpi: 'Satisfacción técnica y tiempos',
-      riesgoMitigado: 'Brecha entre expectativa y servicio',
+      accion: 'Optimizar contenido y rutas de la home web',
+      porQue: 'Rebote 65.85% desperdicia tráfico y oportunidad de contacto',
+      areaLider: 'Marketing',
+      kpi: '% rebote página principal',
+      riesgoMitigado: 'Fuga digital y baja captación',
     },
     {
-      accion: 'Redefinir procesos para atacar "Humedad y filtraciones" (rubro #1)',
-      porQue: 'Mayor volumen de reclamos y principal driver de backlog',
-      areaLider: 'Operaciones',
-      kpi: '% reclamos resueltos Humedad',
-      riesgoMitigado: 'Ciclo vicioso de saturación operativa',
+      accion: 'Implementar feedback post-reparación sistemático',
+      porQue: 'La encuesta muestra insatisfacción relevante en calidad y rapidez',
+      areaLider: 'Postventa',
+      kpi: '% conformidad y NPS',
+      riesgoMitigado: 'Disminución de satisfacción y pérdida de referencias',
     },
     {
-      accion: 'Instaurar protocolo de seguimiento post-cierre de reclamos',
-      porQue: 'Aumentar confianza y percepción de resolución en el cliente',
-      areaLider: 'CX / Comercial',
-      kpi: '% satisfacción con seguimiento',
-      riesgoMitigado: 'Brecha percepción/realidad',
-    },
-    {
-      accion: 'Relanzar encuesta postventa corregida y segmentada por obra',
-      porQue: 'Dataset actual de 53 casos es insuficiente para decisiones granulares',
-      areaLider: 'CX',
-      kpi: 'Volumen y precisión de insights',
-      riesgoMitigado: 'Ceguera estratégica',
+      accion: 'Integrar identificador de obra/rubro en encuestas',
+      porQue: 'Falta de data granular limita acciones focalizadas y análisis causal',
+      areaLider: 'IT / Comercial',
+      kpi: 'Granularidad analítica disponible',
+      riesgoMitigado: 'Acciones pobres o erróneas sin foco real',
     },
   ],
   d90: [
     {
-      accion: 'Rediseño integral de la landing principal y journeys clave',
-      porQue: 'Rebote sostenido requiere impacto duradero, no solo ajustes cosméticos',
-      areaLider: 'Digital',
-      kpi: 'Tasa de rebote / Engagement',
-      riesgoMitigado: 'Dificultad para convertir leads',
+      accion: 'Rediseño de journey postventa con enfoque omnicanal',
+      porQue: 'Encuesta y Google Analytics muestran puntos ciegos y gaps en experiencia total',
+      areaLider: 'CX / IT',
+      kpi: 'Satisfacción global y engagement',
+      riesgoMitigado: 'Desconexión cliente y caída en NPS',
     },
     {
-      accion: 'Automatización del seguimiento de reclamos postventa',
-      porQue: 'Eficiencia y trazabilidad para evitar acumulación de backlog futuro',
-      areaLider: 'IT / Postventa',
-      kpi: 'Tiempo de ciclo de reclamo',
-      riesgoMitigado: 'Backlog estructural',
+      accion: 'Plan de capacitación específica para rubros críticos',
+      porQue: '"Estructura y Mampostería" y "Humedad" concentran la mayoría de reclamos',
+      areaLider: 'Obras',
+      kpi: '% reclamos y tasa de cierre por rubro',
+      riesgoMitigado: 'Persistencia de problemas técnicos específicos',
     },
     {
-      accion: 'Cross-check mensual Postventa – Encuesta – Tráfico Web',
-      porQue: 'Activar loop de feedback y alerta temprana ante focos emergentes',
-      areaLider: 'CX / Data',
-      kpi: 'Tiempo de reacción ante focos',
-      riesgoMitigado: 'Ceguera y latencia en problemas',
+      accion: 'Automatización de reportes para mejora continua',
+      porQue: 'Los gaps actuales impiden seguimiento efectivo y detección temprana',
+      areaLider: 'IT',
+      kpi: 'Trazabilidad y velocidad de reacción',
+      riesgoMitigado: 'Baja capacidad de mejora sostenida',
     },
   ],
 };

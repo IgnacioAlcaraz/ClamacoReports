@@ -2,6 +2,10 @@ import { useState } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import Chat from '../components/Chat.jsx';
 import { META } from '../data/reportMeta.js';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  Legend, ResponsiveContainer, ReferenceLine,
+} from 'recharts';
 
 // Componentes
 import SectionBlock from '../components/report/SectionBlock.jsx';
@@ -28,11 +32,19 @@ const AREAS = [
 
 // ── Vista de Obras ────────────────────────────────────────────────────────────
 function ObrasReport({ d }) {
-  const backlogChart = [
-    { name: 'Total ítems', anterior: 1621, actual: 1611 },
-    { name: 'Cerrados',    anterior: 0,    actual: 10 },
-    { name: 'Nuevos ing.', anterior: 0,    actual: 0 },
+  const totalKpi      = (d.kpisArquitectura || []).find(k => k.label === 'Total ítems');
+  const pendientesKpi = (d.kpisArquitectura || []).find(k => k.label === 'Pendientes totales');
+  const backlogChart  = [
+    { name: 'Total ítems', anterior: totalKpi?.anterior ?? 0, actual: totalKpi?.actual ?? 0 },
   ];
+
+  const geoChart = (d.concentracionGeografica || []).map(g => ({
+    name: g.localidad, actual: g.cantidad, anterior: 0,
+  }));
+
+  const trelloLink = (url) => url
+    ? <a href={url} target="_blank" rel="noreferrer" style={{ color: '#1a56db', fontSize: '0.78rem', fontWeight: 600, whiteSpace: 'nowrap' }}>Ver →</a>
+    : '—';
 
   return (
     <>
@@ -45,15 +57,16 @@ function ObrasReport({ d }) {
       <SectionBlock title="🚦 Semáforo ejecutivo de sub-áreas">
         <DataTable
           columns={[
-            { key: 'subarea',  label: 'Sub-área', width: '140px' },
-            { key: 'estado',   label: 'Estado',   render: (v, row) => <EstadoBadge color={row.color} estado={v} /> },
-            { key: 'metrica',  label: 'Métrica que justifica' },
-            { key: 'umbral',   label: 'Umbral', width: '220px' },
+            { key: 'subarea', label: 'Sub-área', width: '140px' },
+            { key: 'estado',  label: 'Estado',   render: (v, row) => <EstadoBadge color={row.color} estado={v} /> },
+            { key: 'metrica', label: 'Métrica que justifica' },
+            { key: 'umbral',  label: 'Umbral', width: '220px' },
           ]}
           rows={d.semaforo}
         />
       </SectionBlock>
 
+      {/* ── ARQUITECTURA ── */}
       <SectionBlock title="📐 Arquitectura — KPIs del mes">
         <div className="kpi-grid">
           {d.kpisArquitectura.map((k, i) => <KpiCard key={i} {...k} />)}
@@ -62,46 +75,64 @@ function ObrasReport({ d }) {
           data={backlogChart}
           periodoActual={META.periodo}
           periodoAnterior={META.periodoAnterior}
-          title="Evolución del backlog de arquitectura"
+          title="Backlog arquitectura: total ítems y pendientes"
         />
       </SectionBlock>
 
-      <SectionBlock title="⚠️ Obras estancadas (Top 6)">
+      <SectionBlock title="⚠️ Obras con bajo avance o estancadas">
         <DataTable
           columns={[
-            { key: 'obra',        label: 'Obra' },
-            { key: 'avance',      label: 'Avance %', align: 'center', render: (v) => (
+            { key: 'obra',       label: 'Obra' },
+            { key: 'avance',     label: 'Avance %', align: 'center', render: (v) => (
               <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                <span style={{ width: 60, height: 8, background: '#e5e7eb', borderRadius: 4, display: 'inline-block', overflow: 'hidden' }}>
+                <span style={{ width: 56, height: 8, background: '#e5e7eb', borderRadius: 4, display: 'inline-block', overflow: 'hidden' }}>
                   <span style={{ display: 'block', height: '100%', width: `${v}%`, background: v < 10 ? '#ef4444' : '#f97316', borderRadius: 4 }} />
                 </span>
                 {v}%
               </span>
             )},
-            { key: 'pendientes',  label: 'Pendientes', align: 'center' },
-            { key: 'score',       label: 'Score urgencia', align: 'center', render: (v) =>
-              v ? <span style={{ fontWeight: 700, color: '#dc2626' }}>{v}</span> : '—'
+            { key: 'pendientes', label: 'Pendientes', align: 'center' },
+            { key: 'estancada',  label: 'Estancada', align: 'center', render: (v) =>
+              v === true  ? <span style={{ background: '#fef2f2', color: '#b91c1c', padding: '2px 8px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 700 }}>Sí</span>
+            : v === false ? <span style={{ background: '#f0fdf4', color: '#15803d', padding: '2px 8px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 700 }}>No</span>
+            : <span style={{ color: '#9ca3af' }}>—</span>
             },
+            { key: 'trello',     label: 'Trello', align: 'center', render: (v) => trelloLink(v) },
           ]}
           rows={d.obrasEstancadas}
         />
       </SectionBlock>
 
-      <SectionBlock title="🔒 Obras >80% de avance bloqueadas por dependencias" defaultOpen={false}>
+      <SectionBlock title="🔒 Obras >80% bloqueadas por dependencias" defaultOpen={false}>
         <DataTable
           columns={[
             { key: 'obra',        label: 'Obra' },
             { key: 'avance',      label: 'Avance %', align: 'center', render: (v) => `${v}%` },
             { key: 'pendientes',  label: 'Pendientes', align: 'center' },
-            { key: 'dependencia', label: 'Tipo de dependencia' },
+            { key: 'dependencia', label: 'Dependencias bloqueantes' },
+            { key: 'trello',      label: 'Trello', align: 'center', render: (v) => trelloLink(v) },
           ]}
           rows={d.obrasBlockeadas}
         />
       </SectionBlock>
 
+      <SectionBlock title="📄 Obras con Plano PH pendiente" defaultOpen={false}>
+        <DataTable
+          columns={[
+            { key: 'obra',   label: 'Obra' },
+            { key: 'avance', label: 'Avance %', align: 'center', render: (v) => (
+              <span style={{ fontWeight: 700, color: '#16a34a' }}>{v}%</span>
+            )},
+            { key: 'trello', label: 'Trello', align: 'center', render: (v) => trelloLink(v) },
+          ]}
+          rows={d.obrasPlanoPH || []}
+        />
+      </SectionBlock>
+
+      {/* ── DETALLE Y ESTADO ── */}
       <SectionBlock title="📊 Portfolio general" defaultOpen={false}>
         <div className="kpi-grid">
-          {d.portfolio.filter(p => p.cantidad !== null).map((p, i) => (
+          {(d.portfolio || []).map((p, i) => (
             <div key={i} className="kpi-card">
               <p className="kpi-label">{p.estado}</p>
               <p className="kpi-value">{p.cantidad?.toLocaleString('es-AR') ?? '—'}</p>
@@ -116,7 +147,7 @@ function ObrasReport({ d }) {
           columns={[
             { key: 'obra',     label: 'Obra' },
             { key: 'unidades', label: 'Unidades', align: 'center' },
-            { key: 'cocheras', label: 'Cocheras', align: 'center' },
+            { key: 'cocheras', label: 'Cocheras', align: 'center', render: (v) => v ?? '—' },
             { key: 'entrega',  label: 'Fecha entrega', align: 'center' },
             { key: 'estado',   label: 'Estado' },
           ]}
@@ -124,41 +155,49 @@ function ObrasReport({ d }) {
         />
       </SectionBlock>
 
-      <SectionBlock title="📅 Entregas vencidas o próximas (<6 meses)">
+      <SectionBlock title="📅 Entregas vencidas o próximas">
         <DataTable
           columns={[
             { key: 'obra',    label: 'Obra' },
             { key: 'entrega', label: 'Fecha entrega', align: 'center' },
-            { key: 'estado',  label: 'Estado' },
             { key: 'alerta',  label: 'Alerta', align: 'center', render: (v) =>
               <UrgenciaBadge urgencia={v === 'vencida' ? 'critica' : 'alta'} />
             },
+            { key: 'nota',    label: 'Detalle' },
           ]}
           rows={d.obrasEntregaProxima}
         />
       </SectionBlock>
 
-      <SectionBlock title="📉 Descalce avance vs. porcentaje vendido">
+      <SectionBlock title="❓ Obras en limbo (muestra)" defaultOpen={false}>
+        <ul style={{ paddingLeft: 20, margin: 0, lineHeight: 1.9, color: '#374151', fontSize: '0.9rem' }}>
+          {(d.obrasLimbo || []).map((o, i) => <li key={i}>{o}</li>)}
+        </ul>
+        <p style={{ marginTop: 10, fontSize: '0.8rem', color: '#6b7280' }}>
+          Total en limbo: <strong>58 obras</strong> (25.55% del portfolio)
+        </p>
+      </SectionBlock>
+
+      {/* ── PROGRAMACIÓN ── */}
+      <SectionBlock title="🗺️ Concentración geográfica de obras" defaultOpen={false}>
+        <BarComparison
+          data={geoChart}
+          periodoActual="Obras"
+          title="Distribución por localidad"
+        />
         <DataTable
           columns={[
-            { key: 'obra',     label: 'Obra' },
-            { key: 'avance',   label: 'Avance %', align: 'center', render: (v) => `${v}%` },
-            { key: 'vendido',  label: 'Vendido %', align: 'center', render: (v) => `${v}%` },
-            { key: 'descalce', label: 'Descalce %', align: 'center', render: (v) => (
-              <span style={{ fontWeight: 700, color: Math.abs(v) > 20 ? '#dc2626' : v < 0 ? '#ea580c' : '#16a34a' }}>
-                {v > 0 ? '+' : ''}{v}%
-              </span>
+            { key: 'localidad', label: 'Localidad' },
+            { key: 'cantidad',  label: 'Obras', align: 'center', render: (v) => (
+              <span style={{ fontWeight: 700 }}>{v}</span>
             )},
-            { key: 'tipo', label: 'Tipo de riesgo', render: (v) => {
-              const map = { comercial: ['#fef2f2','#b91c1c'], operativo: ['#fff7ed','#c2410c'], inconsistencia: ['#f3f4f6','#6b7280'] };
-              const [bg, color] = map[v] || map.inconsistencia;
-              return <span style={{ background: bg, color, padding: '2px 8px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 700, textTransform: 'capitalize' }}>{v}</span>;
-            }},
+            { key: 'obras',     label: 'Obras destacadas' },
           ]}
-          rows={d.descalces}
+          rows={d.concentracionGeografica || []}
         />
       </SectionBlock>
 
+      {/* ── GESTORÍA ── */}
       <SectionBlock title="🏛️ Gestoría y trámites — KPIs">
         <div className="kpi-grid">
           {d.kpisGestoria.map((k, i) => <KpiCard key={i} {...k} />)}
@@ -169,26 +208,44 @@ function ObrasReport({ d }) {
         <DataTable
           columns={[
             { key: 'obra',        label: 'Obra' },
-            { key: 'paso',        label: 'Paso' },
-            { key: 'fecha',       label: 'Fecha vencimiento', align: 'center' },
-            { key: 'responsable', label: 'Responsable' },
+            { key: 'paso',        label: 'Paso', width: '220px' },
+            { key: 'fecha',       label: 'Vence', align: 'center' },
+            { key: 'responsable', label: 'Responsable', align: 'center' },
             { key: 'urgencia',    label: 'Urgencia', align: 'center', render: (v) => <UrgenciaBadge urgencia={v} /> },
           ]}
           rows={d.vencimientos}
         />
       </SectionBlock>
 
-      <SectionBlock title="⏳ Obras con atraso >90 días" defaultOpen={false}>
+      <SectionBlock title="⏳ Obras con atraso >90 días (top 10)" defaultOpen={false}>
         <DataTable
           columns={[
             { key: 'obra',        label: 'Obra' },
             { key: 'paso',        label: 'Paso bloqueado' },
-            { key: 'dias',        label: 'Días de atraso', align: 'center', render: (v) => (
+            { key: 'dias',        label: 'Días', align: 'center', render: (v) => (
               <span style={{ fontWeight: 700, color: v > 150 ? '#dc2626' : '#ea580c' }}>{v}</span>
             )},
-            { key: 'responsable', label: 'Responsable' },
+            { key: 'responsable', label: 'Responsable', align: 'center' },
           ]}
           rows={d.obrasAtraso90}
+        />
+      </SectionBlock>
+
+      <SectionBlock title="🧱 Obras estancadas en gestoría >90 días" defaultOpen={false}>
+        <DataTable
+          columns={[
+            { key: 'obra',             label: 'Obra' },
+            { key: 'paso',             label: 'Paso estancado' },
+            { key: 'diasEstancada',    label: 'Días estancada', align: 'center', render: (v) => (
+              <span style={{ fontWeight: 700, color: v > 180 ? '#dc2626' : '#ea580c' }}>{v}</span>
+            )},
+            { key: 'pasosAdelantados', label: 'Pasos posteriores adelantados', align: 'center', render: (v) =>
+              v ? <span style={{ color: '#ea580c', fontWeight: 600 }}>Sí ⚠️</span>
+                : <span style={{ color: '#6b7280' }}>No</span>
+            },
+            { key: 'responsable',      label: 'Responsable', align: 'center' },
+          ]}
+          rows={d.obrasEstancadasGestoria || []}
         />
       </SectionBlock>
 
@@ -197,7 +254,7 @@ function ObrasReport({ d }) {
           columns={[
             { key: 'responsable', label: 'Responsable' },
             { key: 'cantidad',    label: 'Obras bloqueadas', align: 'center', render: (v) => (
-              <span style={{ fontWeight: 700, color: v >= 3 ? '#dc2626' : '#374151' }}>{v}</span>
+              <span style={{ fontWeight: 700, color: v >= 5 ? '#dc2626' : v >= 3 ? '#ea580c' : '#374151' }}>{v}</span>
             )},
             { key: 'obras',       label: 'Detalle de obras' },
           ]}
@@ -316,10 +373,71 @@ function ComercialReport({ d }) {
         </div>
       </SectionBlock>
 
-      <SectionBlock title="✍️ Firma Boleto — KPIs de satisfacción">
+      <SectionBlock title="✍️ Firma Boleto — Satisfacción del comprador">
         <div className="kpi-grid">
-          {(d.kpisFirmaBoleto || []).map((k, i) => <KpiCard key={i} {...k} />)}
+          {(d.firmaBoleto?.kpis || []).map((k, i) => (
+            <div key={i} className="kpi-card">
+              <p className="kpi-label">{k.label}</p>
+              <p className="kpi-value">{k.actual}{k.unidad}</p>
+            </div>
+          ))}
         </div>
+
+        {/* Insights */}
+        {(d.firmaBoleto?.insights || []).length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Insights comerciales</p>
+            <ol className="hallazgos-list">
+              {d.firmaBoleto.insights.map((ins, i) => <li key={i}>{ins}</li>)}
+            </ol>
+          </div>
+        )}
+
+        {/* Riesgos */}
+        {(d.firmaBoleto?.riesgos || []).length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Riesgos</p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {d.firmaBoleto.riesgos.map((r, i) => {
+                const color = r.severidad === 'media' ? '#d97706' : r.severidad === 'alta' ? '#dc2626' : '#6b7280';
+                const bg    = r.severidad === 'media' ? '#fffbeb'  : r.severidad === 'alta' ? '#fef2f2'  : '#f9fafb';
+                return (
+                  <li key={i} style={{ background: bg, borderLeft: `3px solid ${color}`, padding: '6px 10px', borderRadius: 4, fontSize: '0.85rem', color: '#374151' }}>
+                    <span style={{ fontWeight: 700, color, textTransform: 'uppercase', fontSize: '0.75rem', marginRight: 6 }}>{r.severidad}</span>
+                    {r.texto}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+
+        {/* Oportunidades */}
+        {(d.firmaBoleto?.oportunidades || []).length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Oportunidades</p>
+            <ul style={{ paddingLeft: 20, margin: 0, lineHeight: 1.9, fontSize: '0.85rem', color: '#374151' }}>
+              {d.firmaBoleto.oportunidades.map((o, i) => <li key={i}>{o}</li>)}
+            </ul>
+          </div>
+        )}
+
+        {/* Plan 7 días */}
+        {(d.firmaBoleto?.planAccion7dias || []).length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Plan de acción — próximos 7 días</p>
+            <ol style={{ paddingLeft: 20, margin: 0, lineHeight: 1.9, fontSize: '0.85rem', color: '#374151' }}>
+              {d.firmaBoleto.planAccion7dias.map((a, i) => <li key={i}>{a}</li>)}
+            </ol>
+          </div>
+        )}
+
+        {/* Conclusión */}
+        {d.firmaBoleto?.conclusion && (
+          <p style={{ marginTop: 16, padding: '10px 14px', background: '#eff6ff', borderLeft: '3px solid #1a56db', borderRadius: 4, fontSize: '0.87rem', color: '#1e3a8a', fontStyle: 'italic' }}>
+            {d.firmaBoleto.conclusion}
+          </p>
+        )}
       </SectionBlock>
 
       <SectionBlock title="📧 Campañas Emblue">
@@ -359,6 +477,12 @@ function FinanzasReport({ d }) {
   const cobranzaChart = [
     { name: 'Mar 2026', anterior: d.cobranzas?.promHistorico ?? 0, actual: d.cobranzas?.mar2026 ?? 0 },
   ];
+
+  const evolucionChart = (d.evolucionMensual || []).map(m => ({
+    mes: m.mes,
+    cobrado: m.cobrado,
+    pagos: m.pagos,
+  }));
 
   const fmt = (n) => n != null ? `$${n.toLocaleString('es-AR')}` : '—';
 
@@ -454,8 +578,8 @@ function FinanzasReport({ d }) {
             <p className="kpi-value">{fmt(d.cobranzas?.promHistorico)}</p>
           </div>
           <div className="kpi-card">
-            <p className="kpi-label">Variación vs histórico</p>
-            <p className="kpi-value" style={{ color: '#dc2626' }}>{d.cobranzas?.variacionVsHistorico}%</p>
+            <p className="kpi-label">Variación vs mes anterior</p>
+            <p className="kpi-value" style={{ color: '#dc2626' }}>{d.cobranzas?.variacionVsMesAnterior}%</p>
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Pendiente total</p>
@@ -473,6 +597,38 @@ function FinanzasReport({ d }) {
           periodoAnterior="Prom. histórico"
           title="Cobranza vs. promedio histórico"
         />
+      </SectionBlock>
+
+      <SectionBlock title="📈 Evolución mensual de cobranzas" defaultOpen={true}>
+        {evolucionChart.length > 0 && (
+          <div className="chart-wrapper">
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={evolucionChart} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="mes" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+                <Tooltip
+                  contentStyle={{ fontSize: 13, borderRadius: 8 }}
+                  formatter={(v, name) => [
+                    name === 'cobrado' ? `$${v.toLocaleString('es-AR')}` : v,
+                    name === 'cobrado' ? 'Cobrado' : 'Pagos',
+                  ]}
+                />
+                <Legend wrapperStyle={{ fontSize: 12 }} formatter={(v) => v === 'cobrado' ? 'Cobrado' : 'Pagos'} />
+                <ReferenceLine
+                  y={d.cobranzas?.promHistorico}
+                  stroke="#f59e0b"
+                  strokeDasharray="6 3"
+                  label={{ value: 'Prom. histórico', position: 'insideTopRight', fontSize: 11, fill: '#92400e' }}
+                />
+                <Bar dataKey="cobrado" name="cobrado" fill="#1a56db" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+            <p style={{ fontSize: 11, color: '#6b7280', marginTop: 4, textAlign: 'center' }}>
+              * Marzo 2026 es parcial (mes en curso)
+            </p>
+          </div>
+        )}
       </SectionBlock>
 
       <SectionBlock title="🏢 Top 5 obras por pendiente" defaultOpen={false}>
