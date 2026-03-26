@@ -1,15 +1,15 @@
 const { StateGraph, START, END, Send, Annotation } = require('@langchain/langgraph');
-const { ChatAnthropic } = require('@langchain/anthropic');
+const { ChatOpenAI } = require('@langchain/openai');
 
 // ── Modelos (lazy init para que la API key exista al momento de uso) ────────────
 let _llmFast = null;
 let _llmSmart = null;
 function getLlmFast() {
-  if (!_llmFast) _llmFast = new ChatAnthropic({ model: 'claude-haiku-4-5-20251001', temperature: 0 });
+  if (!_llmFast) _llmFast = new ChatOpenAI({ model: 'gpt-4.1-mini', temperature: 0 });
   return _llmFast;
 }
 function getLlmSmart() {
-  if (!_llmSmart) _llmSmart = new ChatAnthropic({ model: 'claude-sonnet-4-6', temperature: 0.3 });
+  if (!_llmSmart) _llmSmart = new ChatOpenAI({ model: 'gpt-4.1', temperature: 0.3 });
   return _llmSmart;
 }
 
@@ -22,13 +22,13 @@ const AREA_LABELS = {
 
 // ── Estado del grafo ───────────────────────────────────────────────────────────
 const AnalysisAnnotation = Annotation.Root({
-  periodo:      Annotation(),                    // string
-  areas:        Annotation(),                    // { obras, comercial, finanzas, cx }
-  areaAnalyses: Annotation({                     // acumula resultados de los 4 workers
+  periodo:      Annotation(),
+  areas:        Annotation(),
+  areaAnalyses: Annotation({
     reducer:  (current, update) => current.concat(update),
     default:  () => [],
   }),
-  result:       Annotation(),                    // output final estructurado
+  result:       Annotation(),
 });
 
 // ── Nodo worker: analiza un área individual ────────────────────────────────────
@@ -44,7 +44,8 @@ async function analyzeArea(state) {
     .map((h, i) => `  ${i + 1}. ${h}`)
     .join('\n');
 
-  const prompt = `Sos un analista empresarial senior. Analizá el siguiente reporte de área.
+  const prompt = `Sos un analista empresarial senior especializado en diagnóstico operativo.
+Analizá el siguiente reporte de área con MÁXIMA ESPECIFICIDAD.
 
 ÁREA: ${label}
 PERÍODO: ${state.periodo || 'Actual'}
@@ -55,13 +56,30 @@ ${semaforoText}
 HALLAZGOS PRINCIPALES:
 ${hallazgosText}
 
+INSTRUCCIONES CRÍTICAS:
+- Cada problema, causa y logro DEBE citar el indicador exacto y su valor numérico del semáforo (ej: "mora en 42% vs meta 20%", NO "problemas de cobranza")
+- metricas_en_riesgo: listá SOLO indicadores en rojo o amarillo con sus valores exactos
+- logros: listá SOLO indicadores en verde o mejoras concretas con su dato
+- Si no hay datos suficientes para ser específico, decí exactamente qué falta
+- NUNCA uses frases genéricas como "es importante mejorar", "se debe trabajar en", "hay oportunidades de mejora"
+
 Respondé ÚNICAMENTE con un objeto JSON válido (sin markdown, sin \`\`\`):
 {
   "area": "${area}",
   "label": "${label}",
-  "problemas_criticos": ["descripción breve del problema 1", "..."],
-  "causas_raiz": ["causa identificada 1", "..."],
-  "impacto_cross_area": "descripción de cómo este área impacta a las demás"
+  "problemas_criticos": [
+    "problema específico con dato: ej 'Avance de obra en 34% vs meta 60% del período'"
+  ],
+  "metricas_en_riesgo": [
+    { "metrica": "nombre del KPI", "valor_actual": "valor exacto", "estado": "rojo o amarillo", "meta": "valor objetivo" }
+  ],
+  "logros": [
+    "logro concreto con dato: ej 'Satisfacción CX en 4.6/5, superando meta de 4.2'"
+  ],
+  "causas_raiz": [
+    "causa con evidencia específica del reporte"
+  ],
+  "impacto_cross_area": "cómo los problemas de esta área impactan específicamente a las otras, citando datos"
 }`;
 
   const response = await getLlmFast().invoke(prompt);
@@ -77,6 +95,8 @@ Respondé ÚNICAMENTE con un objeto JSON válido (sin markdown, sin \`\`\`):
       area,
       label,
       problemas_criticos: [],
+      metricas_en_riesgo: [],
+      logros: [],
       causas_raiz: [],
       impacto_cross_area: 'No se pudo analizar esta área.',
     };
@@ -96,45 +116,80 @@ function fanOut(state) {
 async function synthesize(state) {
   const analysesJson = JSON.stringify(state.areaAnalyses, null, 2);
 
-  const prompt = `Sos un director estratégico. Tenés los análisis individuales de 4 áreas del período ${state.periodo}.
+  const prompt = `Sos un director estratégico con visión sistémica. Tenés los análisis detallados de 4 áreas del período ${state.periodo}.
 
-ANÁLISIS POR ÁREA:
+ANÁLISIS POR ÁREA (con métricas exactas):
 ${analysesJson}
 
-Tu tarea es generar un análisis ejecutivo unificado que conecte los problemas entre áreas.
+Tu tarea es generar un análisis ejecutivo cruzado que conecte patrones entre áreas.
+
+INSTRUCCIONES CRÍTICAS — ESPECIFICIDAD OBLIGATORIA:
+- NUNCA uses frases genéricas como "es importante mejorar X", "se recomienda trabajar en", "hay oportunidades de mejora"
+- Cada punto DEBE citar el dato o métrica exacta del reporte que lo sustenta
+- interdependencias: identificá cómo el problema de un área causa o agrava el de otra (con datos específicos de ambas)
+- alertas_tempranas: SOLO indicadores actualmente en amarillo que podrían volverse rojo; explicá por qué con el dato actual
+- logros_destacados: SOLO cosas que realmente están bien (verde), con su impacto concreto en el negocio
+- Si dos áreas tienen problemas relacionados, conectalos explícitamente
+
 Respondé ÚNICAMENTE con un objeto JSON válido (sin markdown, sin \`\`\`):
 {
-  "resumen_ejecutivo": "párrafo ejecutivo de 2-3 oraciones que describe el estado general",
+  "resumen_ejecutivo": "2-3 oraciones con los números clave: qué está crítico, qué está bien, cuál es el patrón dominante del período",
   "cuellos_de_botella": [
     {
       "titulo": "nombre corto del cuello de botella",
-      "descripcion": "explicación de por qué frena a la organización",
+      "descripcion": "por qué frena a la organización, con dato exacto",
       "areas_afectadas": ["obras", "finanzas"]
     }
   ],
   "causas_raiz": [
     {
       "causa": "causa raíz identificada",
-      "evidencia": "dato concreto del reporte que la evidencia",
+      "evidencia": "dato numérico concreto del reporte que la evidencia",
       "areas": ["comercial", "cx"]
+    }
+  ],
+  "alertas_tempranas": [
+    {
+      "alerta": "descripción de qué puede deteriorarse",
+      "area": "nombre_area",
+      "metrica_actual": "valor actual del indicador en amarillo",
+      "riesgo": "qué pasa si no se actúa en los próximos 30 días"
+    }
+  ],
+  "logros_destacados": [
+    {
+      "logro": "descripción concreta del logro con el dato",
+      "areas": ["area1"],
+      "impacto": "por qué esto es relevante para el negocio"
+    }
+  ],
+  "interdependencias": [
+    {
+      "area_origen": "area que genera el problema",
+      "areas_impactadas": ["area1", "area2"],
+      "descripcion": "cómo el problema en área_origen afecta a las otras, con datos de ambas"
     }
   ],
   "recomendaciones": [
     {
       "prioridad": "alta",
-      "accion": "acción concreta a tomar",
-      "impacto_esperado": "qué mejora si se implementa",
+      "accion": "título corto de la acción concreta",
+      "responsable": "área o rol responsable",
+      "contexto": "por qué es necesaria esta acción: qué problema específico del reporte la origina, con el dato exacto",
+      "como_implementar": "pasos concretos para ejecutarla, en 2-4 oraciones",
+      "impacto_esperado": "resultado medible: qué métrica mejora y en cuánto aproximadamente",
       "plazo": "inmediato | 30 días | 60 días | 90 días"
     }
   ]
 }
 
-Reglas:
-- Incluí 2-4 cuellos de botella ordenados de mayor a menor criticidad
-- Incluí 2-4 causas raíz con evidencia numérica del reporte
-- Incluí 3-5 recomendaciones ordenadas de mayor a menor urgencia
-- Sé específico con números y datos del reporte
-- Conectá problemas entre áreas cuando exista relación`;
+Reglas de cantidad:
+- 2-4 cuellos de botella, ordenados de mayor a menor criticidad
+- 2-4 causas raíz con evidencia numérica
+- 2-4 alertas tempranas (solo amarillos reales)
+- 1-3 logros destacados (solo verdes reales, no inventes)
+- 1-3 interdependencias (solo las realmente evidentes en los datos)
+- 3-5 recomendaciones ordenadas de mayor a menor urgencia`;
 
   const response = await getLlmSmart().invoke(prompt);
   let result;
@@ -149,6 +204,9 @@ Reglas:
       resumen_ejecutivo: 'No se pudo generar el análisis ejecutivo.',
       cuellos_de_botella: [],
       causas_raiz: [],
+      alertas_tempranas: [],
+      logros_destacados: [],
+      interdependencias: [],
       recomendaciones: [],
     };
   }

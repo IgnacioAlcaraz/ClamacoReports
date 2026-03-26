@@ -25,7 +25,7 @@ router.post(
       return res.status(400).json({ error: errors.array()[0].msg });
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!process.env.OPENAI_API_KEY) {
       return res.status(503).json({ error: 'El servicio de análisis no está configurado.' });
     }
 

@@ -874,6 +874,10 @@ export default function ReportPage() {
   const [activeArea, setActiveArea] = useState('obras');
   const area = AREAS.find((a) => a.key === activeArea);
 
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysisError, setAnalysisError] = useState(null);
+
   return (
     <AppLayout scrollable>
     <div className="report-page">
@@ -904,7 +908,16 @@ export default function ReportPage() {
           {activeArea === 'comercial' && <ComercialReport d={area.data} />}
           {activeArea === 'finanzas'  && <FinanzasReport  d={area.data} />}
           {activeArea === 'cx'        && <CxReport        d={area.data} />}
-          {activeArea === 'analisis'  && <AnalisisIntegral />}
+          {activeArea === 'analisis'  && (
+            <AnalisisIntegral
+              result={analysisResult}
+              loading={analysisLoading}
+              error={analysisError}
+              onResult={setAnalysisResult}
+              onLoading={setAnalysisLoading}
+              onError={setAnalysisError}
+            />
+          )}
           {activeArea === 'mapa'      && (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
               <iframe

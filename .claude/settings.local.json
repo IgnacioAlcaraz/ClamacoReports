@@ -4,7 +4,8 @@
       "Bash(npm install)",
       "Bash(npm install:*)",
       "Bash(node -e \"require\\(''@langchain/langgraph''\\); require\\(''@langchain/anthropic''\\); console.log\\(''OK''\\)\")",
-      "Bash(node -e \"const app = require\\(''./src/app''\\); console.log\\(''Backend OK''\\)\")"
+      "Bash(node -e \"const app = require\\(''./src/app''\\); console.log\\(''Backend OK''\\)\")",
+      "Bash(echo $OPENAI_API_KEY)"
     ]
   }
 }

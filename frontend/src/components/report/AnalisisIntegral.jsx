@@ -12,17 +12,15 @@ const PRIORIDAD_COLOR = {
   baja:  { bg: '#f0fdf4', border: '#86efac', badge: '#16a34a', text: '#14532d' },
 };
 
-const AREA_LABELS = {
-  obras: 'Obras', comercial: 'Comercial', finanzas: 'Finanzas', cx: 'CX',
-};
+const AREA_COLORS = { obras: '#1a56db', comercial: '#059669', finanzas: '#7c3aed', cx: '#db2777' };
+const AREA_LABELS = { obras: 'Obras', comercial: 'Comercial', finanzas: 'Finanzas', cx: 'CX' };
 
 function AreaPill({ area }) {
-  const colors = { obras: '#1a56db', comercial: '#059669', finanzas: '#7c3aed', cx: '#db2777' };
   return (
     <span style={{
       display: 'inline-block', padding: '1px 8px', borderRadius: 12,
       fontSize: '0.72rem', fontWeight: 700, marginRight: 4, marginBottom: 2,
-      background: colors[area] || '#6b7280', color: '#fff',
+      background: AREA_COLORS[area] || '#6b7280', color: '#fff',
     }}>
       {AREA_LABELS[area] || area}
     </span>
@@ -77,6 +75,84 @@ function CausasRaiz({ items }) {
   );
 }
 
+function AlertasTempranas({ items }) {
+  return (
+    <div>
+      {items.map((a, i) => (
+        <div key={i} style={{
+          background: '#fffbeb', border: '1.5px solid #fcd34d',
+          borderLeft: '4px solid #f59e0b', borderRadius: 8,
+          padding: '12px 14px', marginBottom: 10,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+            <strong style={{ fontSize: '0.95rem', color: '#78350f' }}>{a.alerta}</strong>
+            {a.area && <AreaPill area={a.area} />}
+          </div>
+          {a.metrica_actual && (
+            <p style={{ margin: '5px 0 0', fontSize: '0.82rem', color: '#92400e', fontWeight: 600 }}>
+              Métrica actual: {a.metrica_actual}
+            </p>
+          )}
+          {a.riesgo && (
+            <p style={{ margin: '4px 0 0', fontSize: '0.84rem', color: '#78350f', lineHeight: 1.5 }}>
+              Riesgo: {a.riesgo}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LogrosDestacados({ items }) {
+  return (
+    <div>
+      {items.map((l, i) => (
+        <div key={i} style={{
+          background: '#f0fdf4', border: '1.5px solid #86efac',
+          borderLeft: '4px solid #16a34a', borderRadius: 8,
+          padding: '12px 14px', marginBottom: 10,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+            <strong style={{ fontSize: '0.95rem', color: '#14532d' }}>{l.logro}</strong>
+            <div style={{ flexShrink: 0 }}>
+              {(l.areas || []).map(a => <AreaPill key={a} area={a} />)}
+            </div>
+          </div>
+          {l.impacto && (
+            <p style={{ margin: '6px 0 0', fontSize: '0.84rem', color: '#166534', lineHeight: 1.5 }}>
+              {l.impacto}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Interdependencias({ items }) {
+  return (
+    <div>
+      {items.map((d, i) => (
+        <div key={i} style={{
+          background: '#fff', border: '1.5px solid #a5b4fc',
+          borderLeft: '4px solid #6366f1', borderRadius: 8,
+          padding: '12px 14px', marginBottom: 10,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
+            {d.area_origen && <AreaPill area={d.area_origen} />}
+            <span style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 700 }}>→ impacta a</span>
+            {(d.areas_impactadas || []).map(a => <AreaPill key={a} area={a} />)}
+          </div>
+          <p style={{ margin: 0, fontSize: '0.87rem', color: '#4b5563', lineHeight: 1.55 }}>
+            {d.descripcion}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Recomendaciones({ items }) {
   return (
     <div>
@@ -85,25 +161,70 @@ function Recomendaciones({ items }) {
         return (
           <div key={i} style={{
             background: pal.bg, border: `1.5px solid ${pal.border}`,
-            borderRadius: 8, padding: '12px 14px', marginBottom: 10,
+            borderRadius: 8, padding: '14px 16px', marginBottom: 12,
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span style={{
-                background: pal.badge, color: '#fff', fontSize: '0.7rem',
-                fontWeight: 700, padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase',
-              }}>
-                {r.prioridad}
-              </span>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 4 }}>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <span style={{
+                  background: pal.badge, color: '#fff', fontSize: '0.7rem',
+                  fontWeight: 700, padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase',
+                }}>
+                  {r.prioridad}
+                </span>
+                {r.responsable && (
+                  <span style={{ fontSize: '0.75rem', color: pal.text, fontWeight: 600 }}>
+                    {r.responsable}
+                  </span>
+                )}
+              </div>
               <span style={{ fontSize: '0.75rem', color: pal.text, fontWeight: 600 }}>
                 Plazo: {r.plazo}
               </span>
             </div>
-            <strong style={{ fontSize: '0.95rem', color: '#1a202c', display: 'block', marginBottom: 4 }}>
+
+            {/* Título */}
+            <strong style={{ fontSize: '0.97rem', color: '#1a202c', display: 'block', marginBottom: 10 }}>
               {r.accion}
             </strong>
-            <p style={{ margin: 0, fontSize: '0.84rem', color: '#4b5563', lineHeight: 1.5 }}>
-              {r.impacto_esperado}
-            </p>
+
+            {/* Contexto */}
+            {r.contexto && (
+              <div style={{ marginBottom: 8 }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: pal.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Por qué
+                </span>
+                <p style={{ margin: '3px 0 0', fontSize: '0.85rem', color: '#374151', lineHeight: 1.55 }}>
+                  {r.contexto}
+                </p>
+              </div>
+            )}
+
+            {/* Cómo implementar */}
+            {r.como_implementar && (
+              <div style={{ marginBottom: 8 }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: pal.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Cómo implementar
+                </span>
+                <p style={{ margin: '3px 0 0', fontSize: '0.85rem', color: '#374151', lineHeight: 1.55 }}>
+                  {r.como_implementar}
+                </p>
+              </div>
+            )}
+
+            {/* Impacto esperado */}
+            {r.impacto_esperado && (
+              <div style={{
+                marginTop: 8, paddingTop: 8, borderTop: `1px solid ${pal.border}`,
+              }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: pal.text, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Impacto esperado
+                </span>
+                <p style={{ margin: '3px 0 0', fontSize: '0.85rem', color: '#374151', lineHeight: 1.55 }}>
+                  {r.impacto_esperado}
+                </p>
+              </div>
+            )}
           </div>
         );
       })}
@@ -111,12 +232,16 @@ function Recomendaciones({ items }) {
   );
 }
 
-function Section({ title, count, children }) {
+function Section({ title, count, children, accentColor = '#1a56db' }) {
   const [open, setOpen] = useState(true);
   return (
     <div className="section-block" style={{ marginBottom: 16 }}>
-      <button className="section-header" onClick={() => setOpen(o => !o)}>
-        <span className="section-title">{title} <span style={{ fontWeight: 400, color: '#6b7280', fontSize: '0.85em' }}>({count})</span></span>
+      <button className="section-header" onClick={() => setOpen(o => !o)}
+        style={{ borderLeft: `3px solid ${accentColor}` }}>
+        <span className="section-title">
+          {title}{' '}
+          <span style={{ fontWeight: 400, color: '#6b7280', fontSize: '0.85em' }}>({count})</span>
+        </span>
         <span className="section-chevron">{open ? '▲' : '▼'}</span>
       </button>
       {open && <div className="section-content">{children}</div>}
@@ -124,15 +249,11 @@ function Section({ title, count, children }) {
   );
 }
 
-export default function AnalisisIntegral() {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-
+export default function AnalisisIntegral({ result, loading, error, onResult, onLoading, onError }) {
   async function handleGenerate() {
-    setLoading(true);
-    setError(null);
-    setResult(null);
+    onLoading(true);
+    onError(null);
+    onResult(null);
     try {
       const reportContext = {
         periodo: META.periodo,
@@ -142,11 +263,11 @@ export default function AnalisisIntegral() {
         cx:        { semaforo: cx.semaforo,        hallazgos: cx.hallazgos },
       };
       const data = await analysisApi.generate(reportContext);
-      setResult(data.result);
+      onResult(data.result);
     } catch (err) {
-      setError(err.message || 'Error al generar el análisis.');
+      onError(err.message || 'Error al generar el análisis.');
     } finally {
-      setLoading(false);
+      onLoading(false);
     }
   }
 
@@ -161,7 +282,7 @@ export default function AnalisisIntegral() {
           Análisis Integral con IA
         </h2>
         <p style={{ margin: 0, fontSize: '0.88rem', opacity: 0.85, lineHeight: 1.5 }}>
-          Detecta cuellos de botella, causas raíz y genera recomendaciones cruzando los 4 reportes del período <strong>{META.periodo}</strong>.
+          Cruza los 4 reportes del período <strong>{META.periodo}</strong> para detectar patrones, alertas, logros e interdependencias entre áreas.
         </p>
         <div style={{ marginTop: 14 }}>
           <button
@@ -209,11 +330,11 @@ export default function AnalisisIntegral() {
       {/* Loading skeleton */}
       {loading && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3, 4, 5].map(i => (
             <div key={i} style={{
-              height: 80, borderRadius: 8, background: '#e5e7eb',
+              height: 72, borderRadius: 8, background: '#e5e7eb',
               animation: 'pulse 1.5s ease-in-out infinite',
-              opacity: 1 - i * 0.15,
+              opacity: 1 - i * 0.12,
             }} />
           ))}
           <style>{`@keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }`}</style>
@@ -236,21 +357,42 @@ export default function AnalisisIntegral() {
             </div>
           )}
 
-          <Section title="Cuellos de Botella" count={(result.cuellos_de_botella || []).length}>
+          <Section title="Cuellos de Botella" count={(result.cuellos_de_botella || []).length} accentColor="#dc2626">
             {(result.cuellos_de_botella || []).length > 0
               ? <CuellosDeBottella items={result.cuellos_de_botella} />
               : <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>No se identificaron cuellos de botella.</p>
             }
           </Section>
 
-          <Section title="Causas Raíz" count={(result.causas_raiz || []).length}>
+          <Section title="Causas Raíz" count={(result.causas_raiz || []).length} accentColor="#7c3aed">
             {(result.causas_raiz || []).length > 0
               ? <CausasRaiz items={result.causas_raiz} />
               : <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>No se identificaron causas raíz.</p>
             }
           </Section>
 
-          <Section title="Recomendaciones" count={(result.recomendaciones || []).length}>
+          <Section title="Alertas Tempranas" count={(result.alertas_tempranas || []).length} accentColor="#f59e0b">
+            {(result.alertas_tempranas || []).length > 0
+              ? <AlertasTempranas items={result.alertas_tempranas} />
+              : <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>No se detectaron alertas tempranas.</p>
+            }
+          </Section>
+
+          <Section title="Logros Destacados" count={(result.logros_destacados || []).length} accentColor="#16a34a">
+            {(result.logros_destacados || []).length > 0
+              ? <LogrosDestacados items={result.logros_destacados} />
+              : <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>No se identificaron logros destacados.</p>
+            }
+          </Section>
+
+          <Section title="Interdependencias entre Áreas" count={(result.interdependencias || []).length} accentColor="#6366f1">
+            {(result.interdependencias || []).length > 0
+              ? <Interdependencias items={result.interdependencias} />
+              : <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>No se identificaron interdependencias significativas.</p>
+            }
+          </Section>
+
+          <Section title="Recomendaciones" count={(result.recomendaciones || []).length} accentColor="#0891b2">
             {(result.recomendaciones || []).length > 0
               ? <Recomendaciones items={result.recomendaciones} />
               : <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>No se generaron recomendaciones.</p>
@@ -261,13 +403,11 @@ export default function AnalisisIntegral() {
 
       {/* Estado vacío */}
       {!result && !loading && !error && (
-        <div style={{
-          textAlign: 'center', padding: '40px 20px', color: '#9ca3af',
-        }}>
+        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9ca3af' }}>
           <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🔍</div>
           <p style={{ margin: 0, fontSize: '0.95rem' }}>
             Presioná <strong>Generar Análisis</strong> para que la IA cruce los 4 reportes<br />
-            y detecte patrones, causas y recomendaciones.
+            y detecte patrones, alertas, logros e interdependencias.
           </p>
         </div>
       )}
