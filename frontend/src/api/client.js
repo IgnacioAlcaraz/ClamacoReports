@@ -51,3 +51,11 @@ export const chatApi = {
     });
   },
 };
+
+export const analysisApi = {
+  generate: (reportContext) =>
+    apiFetch('/analysis/generate', {
+      method: 'POST',
+      body: JSON.stringify({ reportContext }),
+    }),
+};

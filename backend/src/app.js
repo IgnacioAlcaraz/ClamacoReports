@@ -7,6 +7,7 @@ const hpp = require('hpp');
 
 const authRoutes = require('./routes/auth');
 const chatRoutes = require('./routes/chat');
+const analysisRoutes = require('./routes/analysis');
 const { globalLimiter } = require('./middleware/rateLimiter');
 const { sanitizeInputs } = require('./middleware/sanitize');
 
@@ -86,6 +87,7 @@ app.disable('x-powered-by');
 // ── API routes ────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/analysis', analysisRoutes);
 
 // ── Rechazar rutas API no existentes ─────────────────────────────────────────
 app.use('/api/*', (_req, res) => {

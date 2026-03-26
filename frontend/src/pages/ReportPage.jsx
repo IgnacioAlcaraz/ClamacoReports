@@ -15,6 +15,7 @@ import BarComparison from '../components/report/BarComparison.jsx';
 import PlanAccion from '../components/report/PlanAccion.jsx';
 import RiesgoTable from '../components/report/RiesgoTable.jsx';
 import { EstadoBadge, UrgenciaBadge } from '../components/report/AlertBadge.jsx';
+import AnalisisIntegral from '../components/report/AnalisisIntegral.jsx';
 
 // Datos por área
 import * as obras from '../data/reportObras.js';
@@ -28,6 +29,7 @@ const AREAS = [
   { key: 'finanzas',  label: 'Finanzas',  data: finanzas },
   { key: 'cx',        label: 'CX',        data: cx },
   { key: 'mapa',      label: 'Mapa de Incidencias', data: null },
+  { key: 'analisis',  label: 'Análisis IA',         data: null },
 ];
 
 // ── Vista de Obras ────────────────────────────────────────────────────────────
@@ -902,6 +904,7 @@ export default function ReportPage() {
           {activeArea === 'comercial' && <ComercialReport d={area.data} />}
           {activeArea === 'finanzas'  && <FinanzasReport  d={area.data} />}
           {activeArea === 'cx'        && <CxReport        d={area.data} />}
+          {activeArea === 'analisis'  && <AnalisisIntegral />}
           {activeArea === 'mapa'      && (
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
               <iframe
@@ -915,7 +918,7 @@ export default function ReportPage() {
           )}
         </div>
 
-        {activeArea !== 'mapa' && (
+        {activeArea !== 'mapa' && activeArea !== 'analisis' && (
           <div className="report-chat-panel">
             <Chat fixedArea={activeArea} />
           </div>

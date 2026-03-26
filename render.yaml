@@ -23,3 +23,5 @@ services:
         sync: false
       - key: WEBHOOK_CX
         sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
