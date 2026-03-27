@@ -9,7 +9,7 @@ function getLlmFast() {
   return _llmFast;
 }
 function getLlmSmart() {
-  if (!_llmSmart) _llmSmart = new ChatOpenAI({ model: 'gpt-4.1', temperature: 0.3 });
+  if (!_llmSmart) _llmSmart = new ChatOpenAI({ model: 'gpt-4.1-mini', temperature: 0.3 });
   return _llmSmart;
 }
 
