@@ -3,6 +3,9 @@
   publish = "frontend/dist"
   functions = "netlify/functions"
 
+[functions]
+  timeout = 26
+
 [build.environment]
   NODE_VERSION = "20"
 
