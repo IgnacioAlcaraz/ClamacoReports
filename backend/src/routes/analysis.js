@@ -26,12 +26,15 @@ router.post(
     }
 
     if (!process.env.OPENAI_API_KEY) {
+      console.error('[analysis] OPENAI_API_KEY no configurada');
       return res.status(503).json({ error: 'El servicio de análisis no está configurado.' });
     }
 
     const { reportContext } = req.body;
+    console.log('[analysis] Iniciando análisis para período:', reportContext.periodo);
 
     try {
+      const t0 = Date.now();
       const finalState = await graph.invoke({
         periodo: reportContext.periodo,
         areas: {
@@ -41,10 +44,12 @@ router.post(
           cx:        reportContext.cx,
         },
       });
+      console.log(`[analysis] Completado en ${Date.now() - t0}ms`);
 
       return res.json({ result: finalState.result });
     } catch (err) {
-      console.error('Error en análisis LangGraph:', err.message);
+      console.error('[analysis] Error:', err.message);
+      console.error('[analysis] Stack:', err.stack);
       return res.status(502).json({ error: 'No se pudo generar el análisis. Intenta nuevamente.' });
     }
   }
