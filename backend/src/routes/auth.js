@@ -62,7 +62,7 @@ router.post(
     res.cookie('token', token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'strict' : 'lax',
+      sameSite: isProd ? 'none' : 'lax',
       maxAge: 8 * 60 * 60 * 1000,
       path: '/',
     });
@@ -74,7 +74,7 @@ router.post(
 
 // POST /api/auth/logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('token', { path: '/', httpOnly: true, secure: isProd, sameSite: isProd ? 'strict' : 'lax' });
+  res.clearCookie('token', { path: '/', httpOnly: true, secure: isProd, sameSite: isProd ? 'none' : 'lax' });
   return res.json({ ok: true });
 });
 
