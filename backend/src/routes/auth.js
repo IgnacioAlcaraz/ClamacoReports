@@ -5,6 +5,14 @@ const { body, validationResult } = require('express-validator');
 const { authLimiter, authSlowDown } = require('../middleware/rateLimiter');
 const { verifyToken } = require('../middleware/authMiddleware');
 const { getUserKeyHex } = require('../utils/encryption');
+const { isLocked, recordFailure, recordSuccess } = require('../middleware/loginGuard');
+const { logSecurity } = require('../utils/logger');
+
+const getIp = (req) =>
+  req.ip ||
+  req.headers['x-nf-client-connection-ip'] ||
+  (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
+  'unknown';
 
 const router = express.Router();
 
@@ -40,6 +48,13 @@ router.post(
     }
 
     const { username, password } = req.body;
+    const ip = getIp(req);
+
+    // Verificar bloqueo por intentos fallidos previos
+    if (isLocked(username, ip)) {
+      logSecurity('login_blocked', { username, ip });
+      return res.status(429).json({ error: 'Cuenta bloqueada temporalmente. Intenta en 15 minutos.' });
+    }
 
     const users = getUsers();
     const hash = users[username];
@@ -49,21 +64,26 @@ router.post(
     const match = await bcrypt.compare(password, validHash);
 
     if (!hash || !match) {
+      recordFailure(username, ip);
+      logSecurity('login_failed', { username, ip });
       // Mensaje genérico — no revelar si el usuario existe o no
       return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
     }
 
+    recordSuccess(username, ip);
+    logSecurity('login_success', { username, ip });
+
     const token = jwt.sign(
       { username },
       process.env.JWT_SECRET,
-      { expiresIn: '8h', issuer: 'clamaco', audience: 'clamaco-web' }
+      { expiresIn: '4h', issuer: 'clamaco', audience: 'clamaco-web' }
     );
 
     res.cookie('token', token, {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
-      maxAge: 8 * 60 * 60 * 1000,
+      // Sin maxAge ni expires → session cookie: el navegador la elimina al cerrar
       path: '/',
     });
 

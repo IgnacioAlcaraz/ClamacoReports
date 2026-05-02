@@ -2,8 +2,8 @@
 // Actualizar estos campos cada mes al cargar un nuevo reporte
 
 export const META = {
-  periodo: 'Marzo 2026',
-  periodoAnterior: 'Febrero 2026',
-  fechaCorte: '16/03/2026',
-  fechaEmision: '16/03/2026',
+  periodo: 'Abril 2026',
+  periodoAnterior: 'Marzo 2026',
+  fechaCorte: '30/04/2026',
+  fechaEmision: '04/05/2026',
 };

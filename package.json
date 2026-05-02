@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "build": "npm run build --prefix frontend && node -e \"require('fs').cpSync('frontend/dist','backend/public',{recursive:true,force:true})\"",
-    "start": "npm run start --prefix backend"
+    "start": "npm run start --prefix backend",
+    "audit:all": "npm audit && npm audit --prefix backend && npm audit --prefix frontend"
   },
   "dependencies": {
     "@langchain/core": "^1.1.36",

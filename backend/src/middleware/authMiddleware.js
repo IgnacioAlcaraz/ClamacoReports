@@ -1,4 +1,11 @@
 const jwt = require('jsonwebtoken');
+const { logSecurity } = require('../utils/logger');
+
+const getIp = (req) =>
+  req.ip ||
+  req.headers['x-nf-client-connection-ip'] ||
+  (req.headers['x-forwarded-for'] || '').split(',')[0].trim() ||
+  'unknown';
 
 function verifyToken(req, res, next) {
   const token = req.cookies?.token;
@@ -15,7 +22,8 @@ function verifyToken(req, res, next) {
     });
     req.user = decoded;
     next();
-  } catch {
+  } catch (err) {
+    logSecurity('invalid_token', { ip: getIp(req), reason: err.message });
     return res.status(401).json({ error: 'Token inválido o expirado' });
   }
 }
