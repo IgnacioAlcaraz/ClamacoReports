@@ -5,23 +5,23 @@ export const semaforo = [
   {
     subarea: 'Postventa',
     estado: 'DETERIORO OPERATIVO',
-    color: 'rojo',
+    color: 'red',
     metrica: 'Tasa resolución abr 2026: 0.70x (23 cierres vs 33 entrantes). 10 casos crónicos >500 días sin cerrar. Backlog activo: 63 casos (26% sobre umbral saludable ≤50).',
-    umbral: '>1.0x = verde; <0.9x = rojo; umbral saludable: ≤50 casos activos',
+    umbral: '>1.0x saludable; <0.9x crítico; umbral saludable: ≤50 casos activos',
   },
   {
     subarea: 'Encuesta Postventa',
     estado: 'SIN DATOS',
-    color: 'negro',
+    color: 'orange',
     metrica: 'Dato no disponible. Punto ciego crítico: no se puede validar percepción del cliente, NPS ni satisfacción con la calidad de resolución.',
     umbral: 'N/A — requiere implementación urgente',
   },
   {
     subarea: 'Tráfico Web',
     estado: 'CRECIMIENTO CON ALERTAS',
-    color: 'amarillo',
+    color: 'yellow',
     metrica: '+7.14% vistas, +6.94% usuarios. Pero 61.6% de rebote en home y engagement time cae -5.06% a apenas 14 segundos. Vistas/usuario: 1.59 (benchmark: >2.5).',
-    umbral: 'Rebote <50% = verde; >60% = amarillo; >70% = rojo',
+    umbral: 'Rebote <50% saludable; >60% alerta; >70% crítico',
   },
 ];
 

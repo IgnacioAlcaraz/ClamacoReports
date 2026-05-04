@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppLayout from '../components/AppLayout.jsx';
 import Chat from '../components/Chat.jsx';
 import { META } from '../data/reportMeta.js';
@@ -537,17 +537,18 @@ function ComercialReport({ d }) {
           ))}
         </div>
         <p style={{ marginTop: 12, padding: '8px 12px', background: '#fef2f2', borderLeft: '3px solid #dc2626', borderRadius: 4, fontSize: '0.85rem', color: '#374151' }}>
-          <strong>Descalce crítico:</strong> El portafolio tiene 89.9% de avance físico promedio pero solo 21.9% de ventas ponderadas — un gap de 68pp que indica capital inmovilizado masivo en cemento en lugar de caja.
+          <strong>Descalce crítico:</strong> El portafolio tiene 89.1% de avance físico promedio pero solo 22.0% de ventas ponderadas — un gap de 67.1pp que indica capital inmovilizado masivo en activos terminados sin retorno.
         </p>
       </SectionBlock>
 
       <SectionBlock title="📉 Brecha avance vs. ventas — Top 10 obras">
         <DataTable
           columns={[
-            { key: 'obra',    label: 'Obra' },
-            { key: 'avance',  label: 'Avance %',  align: 'center', render: (v) => v != null ? `${v}%` : '—' },
-            { key: 'vendido', label: 'Vendido %',  align: 'center', render: (v) => v != null ? `${v}%` : '—' },
-            { key: 'brecha',  label: 'Brecha',     align: 'center', render: (v) => (
+            { key: 'obra',     label: 'Obra' },
+            { key: 'avance',   label: 'Avance %',   align: 'center', render: (v) => v != null ? `${v}%` : '—' },
+            { key: 'vendido',  label: 'Vendido %',   align: 'center', render: (v) => v != null ? `${v}%` : '—' },
+            { key: 'vendidas', label: 'Vendidas',    align: 'center', render: (v, row) => `${v}/${row.total}` },
+            { key: 'brecha',   label: 'Brecha',      align: 'center', render: (v) => (
               <span style={{ fontWeight: 700, color: v >= 80 ? '#b91c1c' : v >= 50 ? '#dc2626' : v >= 30 ? '#ea580c' : '#16a34a' }}>
                 +{v}pp
               </span>
@@ -563,6 +564,11 @@ function ComercialReport({ d }) {
             periodoAnterior="Vendido %"
             title="Avance físico vs. % vendido (top 6 brechas)"
           />
+        )}
+        {d.lecturaAnaliticaBrechaAvance && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.lecturaAnaliticaBrechaAvance}
+          </p>
         )}
       </SectionBlock>
 
@@ -598,35 +604,62 @@ function ComercialReport({ d }) {
         ))}
       </SectionBlock>
 
-      <SectionBlock title="🔴 Stock inmovilizado — 28 años sin venta" defaultOpen={false}>
+      {(d.entregaInminente || []).length === 0 && d.entregaInminenteNota && (
+        <SectionBlock title="📦 Entrega inminente — sin obras en zona crítica" defaultOpen={false}>
+          <p style={{ padding: '8px 12px', background: '#f0fdf4', borderLeft: '3px solid #22c55e', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            {d.entregaInminenteNota}
+          </p>
+        </SectionBlock>
+      )}
+
+      {(d.stockInmovilizado || []).length > 0 && (
+      <SectionBlock title="🔴 Stock inmovilizado — Top 3 obras sin rotación" defaultOpen={false}>
         <p style={{ fontSize: '0.85rem', color: '#b91c1c', fontWeight: 600, marginBottom: 10 }}>
-          Estos tres casos no son descalce: son stock muerto. Llevan 339 meses sin ninguna venta con avance 100%. El sell-out proyectado es infinito (velocidad de ventas = 0 u/mes).
+          Estas obras tienen construcción 100% finalizada y 0% de ventas. No tienen datos de velocidad histórica ni proyección de sell-out (null en sistema): stock no rotativo con costo de oportunidad creciente.
         </p>
         <DataTable
           columns={[
-            { key: 'obra',      label: 'Obra' },
-            { key: 'avance',    label: 'Avance %', align: 'center', render: (v) => <span style={{ fontWeight: 700, color: '#16a34a' }}>{v}%</span> },
-            { key: 'vendido',   label: 'Vendido %', align: 'center', render: (v) => <span style={{ fontWeight: 700, color: '#dc2626' }}>{v}%</span> },
-            { key: 'hipotesis', label: 'Hipótesis de causa' },
+            { key: 'obra',              label: 'Obra' },
+            { key: 'avance',            label: 'Avance %',        align: 'center', render: (v) => <span style={{ fontWeight: 700, color: '#16a34a' }}>{v}%</span> },
+            { key: 'vendido',           label: 'Vendido %',       align: 'center', render: (v) => <span style={{ fontWeight: 700, color: '#dc2626' }}>{v}%</span> },
+            { key: 'disponiblesTotal',  label: 'Disponibles',     align: 'center' },
+            { key: 'diasSinVenta',      label: 'Días sin venta',  align: 'center' },
+            { key: 'velocidadVenta',    label: 'Vel. venta/mes',  align: 'center' },
+            { key: 'selloutProyectado', label: 'Sell-out proy.',  align: 'center' },
+            { key: 'hipotesis',         label: 'Hipótesis de causa' },
           ]}
           rows={d.stockInmovilizado || []}
         />
+        {d.lecturaAnaliticaStock && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.lecturaAnaliticaStock}
+          </p>
+        )}
       </SectionBlock>
+      )}
 
+      {(d.motoresSolvencia || []).length > 0 && (
       <SectionBlock title="💪 Motores de solvencia" defaultOpen={false}>
         <p style={{ fontSize: '0.85rem', color: '#374151', marginBottom: 10 }}>
           Solo estas 3 obras (2.5% del portafolio) lograron sell-out completo y sostienen la solvencia inmediata de Clamaco, compensando el descalce de las 107 obras restantes.
         </p>
         <DataTable
           columns={[
-            { key: 'obra',    label: 'Obra' },
-            { key: 'avance',  label: 'Avance %',  align: 'center', render: (v) => `${v}%` },
-            { key: 'vendido', label: 'Vendido %',  align: 'center', render: (v) => `${v}%` },
-            { key: 'rol',     label: 'Rol en cartera' },
+            { key: 'obra',     label: 'Obra' },
+            { key: 'avance',   label: 'Avance %',  align: 'center', render: (v) => `${v}%` },
+            { key: 'vendido',  label: 'Vendido %',  align: 'center', render: (v) => `${v}%` },
+            { key: 'vendidas', label: 'Vendidas',   align: 'center', render: (v, row) => `${v}/${row.total}` },
+            { key: 'rol',      label: 'Rol en cartera' },
           ]}
           rows={d.motoresSolvencia || []}
         />
+        {d.lecturaAnaliticaMotores && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.lecturaAnaliticaMotores}
+          </p>
+        )}
       </SectionBlock>
+      )}
 
       <SectionBlock title="💧 Estrés de caja" defaultOpen={false}>
         {d.estresCaja && (
@@ -649,9 +682,15 @@ function ComercialReport({ d }) {
               </div>
             </div>
             <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Mecanismo</p>
-            <ul style={{ paddingLeft: 18, marginBottom: 12, fontSize: '0.85rem', color: '#374151', lineHeight: 1.8 }}>
-              {(d.estresCaja.mecanismo || []).map((m, i) => <li key={i}>{m}</li>)}
-            </ul>
+            <p style={{ fontSize: '0.85rem', color: '#374151', lineHeight: 1.7, marginBottom: 12 }}>{d.estresCaja.mecanismo}</p>
+            {(d.estresCaja.impacto || []).length > 0 && (
+              <>
+                <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Impacto</p>
+                <ul style={{ paddingLeft: 18, marginBottom: 12, fontSize: '0.85rem', color: '#374151', lineHeight: 1.8 }}>
+                  {d.estresCaja.impacto.map((m, i) => <li key={i}>{m}</li>)}
+                </ul>
+              </>
+            )}
             <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Consecuencias si no se actúa</p>
             <ul style={{ paddingLeft: 18, marginBottom: 0, fontSize: '0.85rem', color: '#dc2626', lineHeight: 1.8 }}>
               {(d.estresCaja.consecuencias || []).map((c, i) => <li key={i}>{c}</li>)}
@@ -662,25 +701,46 @@ function ComercialReport({ d }) {
 
       {/* ── VENTAS Y RESERVAS ── */}
       <SectionBlock title="🔄 Embudo comercial — estado completo">
+        {d.embudo?.periodoLabel && (
+          <p style={{ fontSize: '0.82rem', color: '#6b7280', marginBottom: 10 }}>
+            Período analizado: <strong>{d.embudo.periodoLabel}</strong>
+          </p>
+        )}
         <div className="kpi-grid" style={{ marginBottom: 16 }}>
           <div className="kpi-card">
-            <p className="kpi-label">Boletos firmados (acumulado)</p>
+            <p className="kpi-label">Boletos generados (período)</p>
             <p className="kpi-value">{d.embudo?.boletos?.toLocaleString('es-AR') ?? '—'}</p>
+            {d.embudo?.montoBoletos && <p className="kpi-prev">${d.embudo.montoBoletos.toLocaleString('es-AR')}</p>}
           </div>
           <div className="kpi-card">
-            <p className="kpi-label">Reservas activas (acumulado)</p>
+            <p className="kpi-label">Reservas generadas (período)</p>
             <p className="kpi-value">{d.embudo?.reservas?.toLocaleString('es-AR') ?? '—'}</p>
+            {d.embudo?.montoReservas && <p className="kpi-prev">${d.embudo.montoReservas.toLocaleString('es-AR')}</p>}
           </div>
           <div className="kpi-card">
-            <p className="kpi-label">Ratio conversión acumulado</p>
-            <p className="kpi-value" style={{ color: '#16a34a' }}>{d.embudo?.ratio}x</p>
-            <p className="kpi-prev">umbral &gt; 0.85x</p>
+            <p className="kpi-label">Ratio conversión</p>
+            <p className="kpi-value" style={{ color: '#16a34a' }}>{d.embudo?.ratio ? `${(d.embudo.ratio * 100).toFixed(1)}%` : '—'}</p>
+            <p className="kpi-prev">umbral &gt; 100% óptimo</p>
           </div>
           <div className="kpi-card">
-            <p className="kpi-label">Aging reservas &gt;60d</p>
+            <p className="kpi-label">Reservas pendientes &gt;60d</p>
             <p className="kpi-value" style={{ color: '#16a34a' }}>{d.embudo?.agingMas60 ?? '—'}</p>
-            <p className="kpi-prev">umbral &lt; 3%</p>
+            <p className="kpi-prev">umbral 0 = óptimo</p>
           </div>
+          {d.embudo?.boletoIngresado != null && (
+            <div className="kpi-card">
+              <p className="kpi-label">Monto boletos ingresado</p>
+              <p className="kpi-value">${d.embudo.boletoIngresado.toLocaleString('es-AR')}</p>
+              <p className="kpi-prev">{d.embudo.boletoIngresadoPct}% del total</p>
+            </div>
+          )}
+          {d.embudo?.reservaIngresada != null && (
+            <div className="kpi-card">
+              <p className="kpi-label">Monto reservas ingresado</p>
+              <p className="kpi-value">${d.embudo.reservaIngresada.toLocaleString('es-AR')}</p>
+              <p className="kpi-prev">{d.embudo.reservaIngresadaPct}% del total</p>
+            </div>
+          )}
         </div>
         <DataTable
           columns={[
@@ -691,8 +751,14 @@ function ComercialReport({ d }) {
           ]}
           rows={d.estadoEmbudoDetalle || []}
         />
+        {d.lecturaAnaliticaEmbudo && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.lecturaAnaliticaEmbudo}
+          </p>
+        )}
       </SectionBlock>
 
+      {(d.tendenciaYoY || []).length > 0 && (
       <SectionBlock title="📊 Tendencia interanual (YoY)">
         <DataTable
           columns={[
@@ -706,16 +772,14 @@ function ComercialReport({ d }) {
               <span style={{ fontWeight: 700, color: v < 0 ? '#dc2626' : '#16a34a' }}>{v > 0 ? '+' : ''}{v}%</span>
             )},
           ]}
-          rows={d.tendenciaYoY || []}
+          rows={d.tendenciaYoY}
         />
-        <p style={{ marginTop: 10, padding: '8px 12px', background: '#fef2f2', borderLeft: '3px solid #dc2626', borderRadius: 4, fontSize: '0.84rem', color: '#374151' }}>
-          La caída del 32% en boletos y 30% en reservas no es estacional ni marginal: señala deterioro estructural en la calidad de los leads o en la efectividad de los canales de captación. Las causas incluyen mercado más frío, oferta menos competitiva, deterioro en canales y mayor competencia.
-        </p>
       </SectionBlock>
+      )}
 
       <SectionBlock title="🏢 Auditoría de canal por inmobiliaria" defaultOpen={false}>
         <p style={{ fontSize: '0.85rem', color: '#374151', marginBottom: 10 }}>
-          Los primeros 4 canales concentran el 60% del volumen (Pareto 10/60). Jorge Cota representa el caso extremo de ineficiencia con 20% de conversión (vs 109% de promedio).
+          Zelaschi lidera con 39.3% de los boletos del período (11 de 28) y conversión sobresaliente. Particular y Di Paolo presentan conversión sub-óptima (57.1% y 66.7% respectivamente), indicando reservas de baja calidad que no cierran.
         </p>
         {canalChart.length > 0 && (
           <BarComparison
@@ -740,10 +804,16 @@ function ComercialReport({ d }) {
           ]}
           rows={d.canalInmobiliaria || []}
         />
+        {d.lecturaAnaliticaCanal && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.lecturaAnaliticaCanal}
+          </p>
+        )}
       </SectionBlock>
 
       <SectionBlock title="📅 Aging de reservas y alertas activas" defaultOpen={false}>
-        <div className="kpi-grid" style={{ marginBottom: 16 }}>
+        <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Período reciente (últimos 30 días)</p>
+        <div className="kpi-grid" style={{ marginBottom: 10 }}>
           <div className="kpi-card">
             <p className="kpi-label">Mora &gt;30 días</p>
             <p className="kpi-value" style={{ color: '#16a34a' }}>{d.agingReservas?.moraMas30 ?? '—'}</p>
@@ -758,9 +828,71 @@ function ComercialReport({ d }) {
             <p className="kpi-value" style={{ color: '#16a34a' }}>{d.agingReservas?.promedioDias ?? '—'}</p>
           </div>
         </div>
-        <p style={{ fontSize: '0.85rem', color: '#374151', lineHeight: 1.6, marginBottom: 10 }}>
-          El embudo está completamente limpio sin acumulación de reservas antiguas. Sin embargo, esta limpieza debe mantenerse con disciplina semanal: toda reserva que supere 30 días debe tener justificación escrita firmada por el responsable, caso contrario debe liberarse automáticamente.
+        <p style={{ fontSize: '0.85rem', color: '#374151', lineHeight: 1.6, marginBottom: 16 }}>
+          El embudo reciente está completamente limpio: 0% de mora en el período. Esta disciplina debe mantenerse con revisión semanal — toda reserva que supere 30 días debe tener justificación escrita o liberarse automáticamente.
         </p>
+
+        {d.agingReservas?.backlog && (
+          <div style={{ padding: '14px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, marginBottom: 12 }}>
+            <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#b91c1c', marginBottom: 12 }}>⚠️ Backlog Histórico — Situación Crítica</p>
+            <div className="kpi-grid" style={{ marginBottom: 12 }}>
+              <div className="kpi-card">
+                <p className="kpi-label">Reservas históricas pendientes</p>
+                <p className="kpi-value" style={{ color: '#b91c1c' }}>{d.agingReservas.backlog.total}</p>
+                <p className="kpi-prev">100% con mora &gt;90 días</p>
+              </div>
+              <div className="kpi-card">
+                <p className="kpi-label">Promedio días pendientes</p>
+                <p className="kpi-value" style={{ color: '#b91c1c' }}>{d.agingReservas.backlog.promedioDias}</p>
+                <p className="kpi-prev">Máximo: {d.agingReservas.backlog.maximo} días</p>
+              </div>
+              <div className="kpi-card">
+                <p className="kpi-label">Monto inmovilizado</p>
+                <p className="kpi-value" style={{ color: '#b91c1c', fontSize: '1rem' }}>${d.agingReservas.backlog.montoInmovilizado?.toLocaleString('es-AR')}</p>
+              </div>
+              <div className="kpi-card">
+                <p className="kpi-label">Sin motivo documentado</p>
+                <p className="kpi-value" style={{ color: '#dc2626' }}>{d.agingReservas.backlog.sinMotivo}</p>
+                <p className="kpi-prev">de {d.agingReservas.backlog.total} casos (99.4%)</p>
+              </div>
+            </div>
+
+            {d.agingReservas?.responsableCritico && (
+              <div style={{ marginBottom: 8, padding: '10px 12px', background: '#fff', border: '1px solid #fecaca', borderRadius: 6 }}>
+                <p style={{ fontWeight: 700, fontSize: '0.85rem', color: '#b91c1c', marginBottom: 8 }}>
+                  Responsable crítico: {d.agingReservas.responsableCritico.nombre}
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: '0.82rem', color: '#374151' }}>
+                  <div><strong>Reservas:</strong> {d.agingReservas.responsableCritico.cantidad} ({d.agingReservas.responsableCritico.porcentajeBacklog}% del backlog)</div>
+                  <div><strong>Promedio:</strong> {d.agingReservas.responsableCritico.promedioDias} días</div>
+                  <div><strong>Máximo:</strong> {d.agingReservas.responsableCritico.maximo} días</div>
+                  <div><strong>Monto:</strong> ${d.agingReservas.responsableCritico.monto?.toLocaleString('es-AR')}</div>
+                </div>
+                <p style={{ fontSize: '0.81rem', color: '#6b7280', marginTop: 6 }}>
+                  <strong>Causa:</strong> {d.agingReservas.responsableCritico.causa}
+                </p>
+              </div>
+            )}
+
+            {d.agingReservas?.obraCriticaBacklog && (
+              <div style={{ padding: '10px 12px', background: '#fff', border: '1px solid #fecaca', borderRadius: 6 }}>
+                <p style={{ fontWeight: 700, fontSize: '0.85rem', color: '#b91c1c', marginBottom: 8 }}>
+                  Obra crítica: {d.agingReservas.obraCriticaBacklog.nombre}
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: '0.82rem', color: '#374151' }}>
+                  <div><strong>Reservas:</strong> {d.agingReservas.obraCriticaBacklog.cantidad}</div>
+                  <div><strong>Promedio:</strong> {d.agingReservas.obraCriticaBacklog.promedioDias} días</div>
+                  <div><strong>Máximo:</strong> {d.agingReservas.obraCriticaBacklog.maximo} días</div>
+                  <div><strong>Monto:</strong> ${d.agingReservas.obraCriticaBacklog.monto?.toLocaleString('es-AR')}</div>
+                </div>
+                <p style={{ fontSize: '0.81rem', color: '#6b7280', marginTop: 6 }}>
+                  <strong>Causa:</strong> {d.agingReservas.obraCriticaBacklog.causa}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
         {(d.agingReservas?.obrasCriticas || []).length > 0 && (
           <DataTable
             columns={[
@@ -774,14 +906,21 @@ function ComercialReport({ d }) {
 
       {/* ── FIRMA BOLETO ── */}
       <SectionBlock title="✍️ Firma Boleto — Satisfacción del comprador">
-        <div className="kpi-grid">
-          {(d.firmaBoleto?.kpis || []).map((k, i) => (
-            <div key={i} className="kpi-card">
-              <p className="kpi-label">{k.label}</p>
-              <p className="kpi-value">{k.actual}{k.unidad}</p>
-            </div>
-          ))}
-        </div>
+        {(d.firmaBoleto?.kpis || []).length > 0 && (
+          <DataTable
+            columns={[
+              { key: 'metrica',        label: 'Métrica' },
+              { key: 'valor',          label: 'Valor', align: 'center', render: (v) => <span style={{ fontWeight: 700 }}>{v}</span> },
+              { key: 'interpretacion', label: 'Interpretación' },
+            ]}
+            rows={d.firmaBoleto.kpis}
+          />
+        )}
+        {d.firmaBoleto?.lecturaAnaliticaKpis && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.firmaBoleto.lecturaAnaliticaKpis}
+          </p>
+        )}
 
         {(d.firmaBoleto?.satisfaccion || []).length > 0 && (
           <div style={{ marginTop: 16 }}>
@@ -797,6 +936,28 @@ function ComercialReport({ d }) {
               rows={d.firmaBoleto.satisfaccion}
             />
           </div>
+        )}
+
+        {(d.firmaBoleto?.recompra || []).length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Intención de recompra</p>
+            <DataTable
+              columns={[
+                { key: 'respuesta', label: 'Respuesta' },
+                { key: 'pct',       label: '%', align: 'center', render: (v) => (
+                  <span style={{ fontWeight: 700, color: v >= 70 ? '#16a34a' : v >= 15 ? '#d97706' : '#dc2626' }}>{v}%</span>
+                )},
+                { key: 'cantidad',  label: 'Respuestas', align: 'center' },
+              ]}
+              rows={d.firmaBoleto.recompra}
+            />
+          </div>
+        )}
+
+        {d.firmaBoleto?.lecturaAnaliticaSatisfaccion && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.firmaBoleto.lecturaAnaliticaSatisfaccion}
+          </p>
         )}
 
         {(d.firmaBoleto?.captacion || []).length > 0 && (
@@ -829,6 +990,11 @@ function ComercialReport({ d }) {
               ]}
               rows={d.firmaBoleto.cumplimientoPlazo}
             />
+            {d.firmaBoleto?.lecturaAnaliticaCumplimiento && (
+              <p style={{ marginTop: 10, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+                <strong>Lectura analítica:</strong> {d.firmaBoleto.lecturaAnaliticaCumplimiento}
+              </p>
+            )}
           </div>
         )}
 
@@ -844,14 +1010,18 @@ function ComercialReport({ d }) {
         {(d.firmaBoleto?.riesgos || []).length > 0 && (
           <div style={{ marginTop: 16 }}>
             <p style={{ fontWeight: 700, fontSize: '0.82rem', color: '#374151', marginBottom: 6 }}>Riesgos</p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {d.firmaBoleto.riesgos.map((r, i) => (
-                <li key={i} style={{ background: bgSeveridad(r.severidad), borderLeft: `3px solid ${colorSeveridad(r.severidad)}`, padding: '6px 10px', borderRadius: 4, fontSize: '0.85rem', color: '#374151' }}>
-                  <span style={{ fontWeight: 700, color: colorSeveridad(r.severidad), textTransform: 'uppercase', fontSize: '0.75rem', marginRight: 6 }}>{r.severidad}</span>
-                  {r.texto}
-                </li>
+                <div key={i} style={{ background: bgSeveridad(r.severidad), borderLeft: `3px solid ${colorSeveridad(r.severidad)}`, padding: '8px 12px', borderRadius: 4, fontSize: '0.84rem', color: '#374151' }}>
+                  <p style={{ margin: '0 0 4px 0' }}>
+                    <span style={{ fontWeight: 700, color: colorSeveridad(r.severidad), textTransform: 'uppercase', fontSize: '0.75rem', marginRight: 6 }}>{r.severidad}</span>
+                    <strong>{r.texto}</strong>
+                  </p>
+                  {r.causa && <p style={{ margin: '2px 0', fontSize: '0.82rem', color: '#4b5563' }}><strong>Causa:</strong> {r.causa}</p>}
+                  {r.consecuencia && <p style={{ margin: '2px 0', fontSize: '0.82rem', color: '#4b5563' }}><strong>Consecuencia:</strong> {r.consecuencia}</p>}
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
@@ -917,7 +1087,75 @@ function ComercialReport({ d }) {
           ]}
           rows={d.embleaBenchmarks || []}
         />
+        {d.lecturaAnaliticaEmblue && (
+          <p style={{ marginTop: 12, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.lecturaAnaliticaEmblue}
+          </p>
+        )}
       </SectionBlock>
+
+      {d.emblueAnalisis && (
+        <SectionBlock title="🔬 Análisis de campañas Emblue" defaultOpen={false}>
+          {d.emblueAnalisis.destacada && (
+            <div style={{ marginBottom: 16, padding: '14px 16px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, borderLeft: '4px solid #22c55e' }}>
+              <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#15803d', marginBottom: 8 }}>
+                Campaña destacada: {d.emblueAnalisis.destacada.campana}
+              </p>
+              {(d.emblueAnalisis.destacada.puntos || []).map((p, i) => (
+                <p key={i} style={{ fontSize: '0.84rem', color: '#374151', marginBottom: 4, lineHeight: 1.6 }}>
+                  <strong>{p.label}:</strong> {p.texto}
+                </p>
+              ))}
+              {(d.emblueAnalisis.destacada.causaExito || []).length > 0 && (
+                <>
+                  <p style={{ fontWeight: 700, fontSize: '0.78rem', color: '#15803d', textTransform: 'uppercase', marginTop: 10, marginBottom: 4 }}>Causas del éxito</p>
+                  <ul style={{ paddingLeft: 18, margin: 0, fontSize: '0.83rem', color: '#374151', lineHeight: 1.7 }}>
+                    {d.emblueAnalisis.destacada.causaExito.map((c, i) => <li key={i}>{c}</li>)}
+                  </ul>
+                </>
+              )}
+              {d.emblueAnalisis.destacada.recomendacion && (
+                <p style={{ marginTop: 10, fontSize: '0.84rem', color: '#15803d', fontStyle: 'italic' }}>
+                  <strong>Recomendación:</strong> {d.emblueAnalisis.destacada.recomendacion}
+                </p>
+              )}
+            </div>
+          )}
+          {d.emblueAnalisis.problema && (
+            <div style={{ padding: '14px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, borderLeft: '4px solid #dc2626' }}>
+              <p style={{ fontWeight: 700, fontSize: '0.9rem', color: '#b91c1c', marginBottom: 8 }}>
+                Campaña problema: {d.emblueAnalisis.problema.campana}
+              </p>
+              {(d.emblueAnalisis.problema.metricas || []).map((p, i) => (
+                <p key={i} style={{ fontSize: '0.84rem', color: '#374151', marginBottom: 4, lineHeight: 1.6 }}>
+                  <strong>{p.label}:</strong> {p.texto}
+                </p>
+              ))}
+              {(d.emblueAnalisis.problema.causaRaiz || []).length > 0 && (
+                <>
+                  <p style={{ fontWeight: 700, fontSize: '0.78rem', color: '#b91c1c', textTransform: 'uppercase', marginTop: 10, marginBottom: 4 }}>Causa raíz</p>
+                  <ul style={{ paddingLeft: 18, margin: 0, fontSize: '0.83rem', color: '#374151', lineHeight: 1.7 }}>
+                    {d.emblueAnalisis.problema.causaRaiz.map((c, i) => <li key={i}>{c}</li>)}
+                  </ul>
+                </>
+              )}
+              {(d.emblueAnalisis.problema.impactoReal || []).length > 0 && (
+                <>
+                  <p style={{ fontWeight: 700, fontSize: '0.78rem', color: '#b91c1c', textTransform: 'uppercase', marginTop: 10, marginBottom: 4 }}>Impacto real</p>
+                  <ul style={{ paddingLeft: 18, margin: 0, fontSize: '0.83rem', color: '#374151', lineHeight: 1.7 }}>
+                    {d.emblueAnalisis.problema.impactoReal.map((imp, i) => <li key={i}>{imp}</li>)}
+                  </ul>
+                </>
+              )}
+              {d.emblueAnalisis.problema.accion && (
+                <p style={{ marginTop: 10, fontSize: '0.84rem', color: '#b91c1c', fontStyle: 'italic' }}>
+                  <strong>Acción urgente:</strong> {d.emblueAnalisis.problema.accion}
+                </p>
+              )}
+            </div>
+          )}
+        </SectionBlock>
+      )}
 
       <SectionBlock title="🚨 Alertas críticas Emblue" defaultOpen={false}>
         {(d.embleaAlertas || []).map((a, i) => (
@@ -958,6 +1196,11 @@ function ComercialReport({ d }) {
             </div>
           </div>
         ))}
+        {d.lecturaAnaliticaCruces && (
+          <p style={{ marginTop: 14, padding: '8px 12px', background: '#f9fafb', borderLeft: '3px solid #6366f1', borderRadius: 4, fontSize: '0.84rem', color: '#374151', lineHeight: 1.7 }}>
+            <strong>Lectura analítica:</strong> {d.lecturaAnaliticaCruces}
+          </p>
+        )}
       </SectionBlock>
 
       {/* ── RIESGOS Y PLAN ── */}
@@ -1656,9 +1899,32 @@ export default function ReportPage() {
   const [activeArea, setActiveArea] = useState('obras');
   const area = AREAS.find((a) => a.key === activeArea);
 
-  const [analysisResult, setAnalysisResult] = useState(null);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [analysisError, setAnalysisError] = useState(null);
+  const STORAGE_KEY = `clamaco_analysis_${META.periodo.replace(/\s/g, '_')}`;
+
+  const [analysisResult,  setAnalysisResultRaw]  = useState(null);
+  const [analysisMeta,    setAnalysisMeta]        = useState(null);
+  const [analysisLoading, setAnalysisLoading]     = useState(false);
+  const [analysisError,   setAnalysisError]       = useState(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const { result, generatedAt } = JSON.parse(saved);
+        setAnalysisResultRaw(result);
+        setAnalysisMeta({ generatedAt });
+      }
+    } catch { /* ignora datos corruptos */ }
+  }, [STORAGE_KEY]);
+
+  function setAnalysisResult(result) {
+    setAnalysisResultRaw(result);
+    if (result) {
+      const generatedAt = new Date().toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+      setAnalysisMeta({ generatedAt });
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ result, generatedAt })); } catch { /* quota llena */ }
+    }
+  }
 
   return (
     <AppLayout scrollable>
@@ -1667,7 +1933,7 @@ export default function ReportPage() {
         <div>
           <h1 className="report-title">Reporte Maestro</h1>
           <p className="report-subtitle">
-            Período: <strong>{META.periodo}</strong> · Corte: {META.fechaCorte} · Emitido: {META.fechaEmision}
+            Período: <strong>{META.periodo}</strong>
           </p>
         </div>
       </div>
@@ -1693,6 +1959,7 @@ export default function ReportPage() {
           {activeArea === 'analisis'  && (
             <AnalisisIntegral
               result={analysisResult}
+              meta={analysisMeta}
               loading={analysisLoading}
               error={analysisError}
               onResult={setAnalysisResult}

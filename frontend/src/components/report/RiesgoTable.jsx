@@ -13,6 +13,7 @@ export default function RiesgoTable({ riesgos }) {
             <th>Riesgo</th>
             <th style={{ textAlign: 'center' }}>Probabilidad</th>
             <th style={{ textAlign: 'center' }}>Impacto</th>
+            <th>Área responsable</th>
           </tr>
         </thead>
         <tbody>
@@ -21,6 +22,7 @@ export default function RiesgoTable({ riesgos }) {
               <td>{r.riesgo}</td>
               <td style={{ textAlign: 'center' }}><RiesgoBadge nivel={r.probabilidad} /></td>
               <td style={{ textAlign: 'center' }}><RiesgoBadge nivel={r.impacto} /></td>
+              <td style={{ fontSize: '0.82rem', color: '#4b5563' }}>{r.areaResponsable ?? '—'}</td>
             </tr>
           ))}
         </tbody>

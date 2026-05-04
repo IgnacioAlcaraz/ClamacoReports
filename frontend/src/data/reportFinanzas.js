@@ -5,23 +5,23 @@ export const semaforo = [
   {
     subarea: 'Cobranzas',
     estado: 'ESTABLE CON DEBILIDAD DE FLUJO',
-    color: 'amarillo',
+    color: 'yellow',
     metrica: 'Cobro abril 2026 (parcial): $1.369.689 — -10,3% vs promedio histórico ($1.526.706). Tendencia descendente desde dic 2025 (-33,4% acumulado en 3 meses).',
-    umbral: '<-15% rojo, -5% a -15% amarillo, >-5% verde',
+    umbral: '<-15% crítico, -5% a -15% alerta, >-5% saludable',
   },
   {
     subarea: 'Deudores / Mora',
     estado: 'COLAPSO SISTÉMICO',
-    color: 'rojo',
-    metrica: '99,19% de cartera en mora ($183.539 de $185.039 total). 53 deudores. Único colchón: $1.500 no vencida (PABLO GASTON SANDOVAL).',
-    umbral: '>80% rojo, 50-80% amarillo, <50% verde',
+    color: 'red',
+    metrica: '99,19% de cartera de cobranza en mora ($183.539 de $185.039 cartera de cuotas activas). 53 deudores. Nota: este universo es la cartera de cuotas, NO el portfolio inmobiliario total.',
+    umbral: '>80% crítico, 50-80% alerta, <50% saludable',
   },
   {
     subarea: 'Pendiente Cartera Vendida',
     estado: 'SALUDABLE',
-    color: 'verde',
-    metrica: '3,83% pendiente vs histórico cobrado ($3.790.062 de $99.083.129). Muy por debajo del umbral de riesgo sectorial (8-12% normal).',
-    umbral: '>10% rojo, 5-10% amarillo, <5% verde',
+    color: 'green',
+    metrica: '$3.790.062 pendientes de cobro sobre $99.083.129 cobrados acumulados en 64 meses (no es el valor del portfolio — es el acumulado histórico cobrado). Ratio de pendiente actual: 3,83%, por debajo del umbral sectorial de riesgo (8-12%).',
+    umbral: '>10% crítico, 5-10% alerta, <5% saludable',
   },
 ];
 

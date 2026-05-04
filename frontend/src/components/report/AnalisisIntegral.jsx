@@ -249,7 +249,15 @@ function Section({ title, count, children, accentColor = '#1a56db' }) {
   );
 }
 
-export default function AnalisisIntegral({ result, loading, error, onResult, onLoading, onError }) {
+export default function AnalisisIntegral({ result, meta, loading, error, onResult, onLoading, onError }) {
+  function handleClear() {
+    onResult(null);
+    try {
+      const key = Object.keys(localStorage).find(k => k.startsWith('clamaco_analysis_'));
+      if (key) localStorage.removeItem(key);
+    } catch { /* noop */ }
+  }
+
   async function handleGenerate() {
     onLoading(true);
     onError(null);
@@ -310,9 +318,21 @@ export default function AnalisisIntegral({ result, loading, error, onResult, onL
             )}
           </button>
           {result && !loading && (
-            <span style={{ marginLeft: 12, fontSize: '0.8rem', opacity: 0.8 }}>
-              Análisis generado
-            </span>
+            <>
+              <span style={{ marginLeft: 12, fontSize: '0.8rem', opacity: 0.8 }}>
+                {meta?.generatedAt ? `Generado el ${meta.generatedAt}` : 'Análisis generado'}
+              </span>
+              <button
+                onClick={handleClear}
+                style={{
+                  marginLeft: 10, background: 'transparent', color: 'rgba(255,255,255,0.7)',
+                  border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6,
+                  padding: '4px 10px', fontSize: '0.75rem', cursor: 'pointer',
+                }}
+              >
+                Borrar
+              </button>
+            </>
           )}
         </div>
       </div>
