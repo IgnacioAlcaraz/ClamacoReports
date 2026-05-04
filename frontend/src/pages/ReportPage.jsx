@@ -179,12 +179,6 @@ function ObrasReport({ d }) {
         <div className="kpi-grid">
           {(d.kpisArquitectura || []).map((k, i) => <KpiCard key={i} {...k} />)}
         </div>
-        <BarComparison
-          data={backlogChart}
-          periodoActual={META.periodo}
-          periodoAnterior={META.periodoAnterior}
-          title="Backlog arquitectura: total ítems"
-        />
       </SectionBlock>
 
       <SectionBlock title="⚠️ Obras con bajo avance o estancadas">
@@ -307,14 +301,6 @@ function ObrasReport({ d }) {
           ]}
           rows={d.obrasDesacople || []}
         />
-        {descalceChart.length > 0 && (
-          <BarComparison
-            data={descalceChart}
-            periodoActual="Avance %"
-            periodoAnterior="Vendido %"
-            title="Top descalces: avance físico vs. % vendido"
-          />
-        )}
       </SectionBlock>
 
       <SectionBlock title="🔬 Top 3 descalces — análisis causa y consecuencia" defaultOpen={false}>
@@ -1107,41 +1093,45 @@ function FinanzasReport({ d }) {
               </BarChart>
             </ResponsiveContainer>
             <p style={{ fontSize: 11, color: '#6b7280', marginTop: 4, textAlign: 'center' }}>
-              * Abr 2026 es mes en curso (parcial). Pico: Abr 2025 ($2,2M). Valle: Oct 2025 ($867K, -37,4%).
+              * Abr 2026 es mes en curso (parcial). Pico: Ago 2025 ($2,0M). Valle: Oct 2025 ($867K, -37,4%).
             </p>
           </div>
         )}
       </SectionBlock>
 
-      <SectionBlock title="🏆 Top 5 obras por cobro histórico" defaultOpen={false}>
-        <DataTable
-          columns={[
-            { key: 'obra',           label: 'Obra' },
-            { key: 'cobrado',        label: 'Cobrado', align: 'right', render: (v) => fmt(v) },
-            { key: 'pendiente',      label: 'Pendiente', align: 'right', render: (v) => fmt(v) },
-            { key: 'efectividad',    label: 'Efectividad', align: 'center', render: (v) => (
-              <span style={{ fontWeight: 700, color: v >= 98 ? '#16a34a' : v >= 95 ? '#d97706' : '#dc2626' }}>{v}%</span>
-            )},
-            { key: 'interpretacion', label: 'Interpretación' },
-          ]}
-          rows={d.topObrasCobro || []}
-        />
-      </SectionBlock>
+      {(d.topObrasCobro || []).length > 0 && (
+        <SectionBlock title="🏆 Top 5 obras por cobro histórico" defaultOpen={false}>
+          <DataTable
+            columns={[
+              { key: 'obra',           label: 'Obra' },
+              { key: 'cobrado',        label: 'Cobrado', align: 'right', render: (v) => fmt(v) },
+              { key: 'pendiente',      label: 'Pendiente', align: 'right', render: (v) => fmt(v) },
+              { key: 'efectividad',    label: 'Efectividad', align: 'center', render: (v) => (
+                <span style={{ fontWeight: 700, color: v >= 98 ? '#16a34a' : v >= 95 ? '#d97706' : '#dc2626' }}>{v}%</span>
+              )},
+              { key: 'interpretacion', label: 'Interpretación' },
+            ]}
+            rows={d.topObrasCobro}
+          />
+        </SectionBlock>
+      )}
 
-      <SectionBlock title="🏢 Top 5 obras por pendiente" defaultOpen={false}>
-        <DataTable
-          columns={[
-            { key: 'obra',         label: 'Obra' },
-            { key: 'pendiente',    label: 'Pendiente', align: 'right', render: (v) => fmt(v) },
-            { key: 'cobrado',      label: 'Cobrado', align: 'right', render: (v) => fmt(v) },
-            { key: 'pctPendiente', label: '% pend/obra', align: 'center', render: (v) => (
-              <span style={{ fontWeight: 700, color: v >= 30 ? '#dc2626' : v >= 10 ? '#ea580c' : '#374151' }}>{v}%</span>
-            )},
-            { key: 'riesgo', label: 'Riesgo' },
-          ]}
-          rows={d.topObrasPendiente || []}
-        />
-      </SectionBlock>
+      {(d.topObrasPendiente || []).length > 0 && (
+        <SectionBlock title="🏢 Top 5 obras por pendiente" defaultOpen={false}>
+          <DataTable
+            columns={[
+              { key: 'obra',         label: 'Obra' },
+              { key: 'pendiente',    label: 'Pendiente', align: 'right', render: (v) => fmt(v) },
+              { key: 'cobrado',      label: 'Cobrado', align: 'right', render: (v) => fmt(v) },
+              { key: 'pctPendiente', label: '% pend/obra', align: 'center', render: (v) => (
+                <span style={{ fontWeight: 700, color: v >= 30 ? '#dc2626' : v >= 10 ? '#ea580c' : '#374151' }}>{v}%</span>
+              )},
+              { key: 'riesgo', label: 'Riesgo' },
+            ]}
+            rows={d.topObrasPendiente}
+          />
+        </SectionBlock>
+      )}
 
       <SectionBlock title="🏬 Top 5 inmobiliarias (cobro, pendiente, efectividad)" defaultOpen={false}>
         <DataTable
@@ -1191,7 +1181,7 @@ function FinanzasReport({ d }) {
           <div className="kpi-card">
             <p className="kpi-label">Mora total</p>
             <p className="kpi-value" style={{ color: '#dc2626' }}>{fmt(d.mora?.moraTotal)}</p>
-            <p className="kpi-prev">{d.mora?.pctMora}% del pendiente total</p>
+            <p className="kpi-prev">{d.mora?.pctMora}% de cartera activa en mora</p>
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Deudores únicos</p>
@@ -1200,7 +1190,7 @@ function FinanzasReport({ d }) {
           <div className="kpi-card">
             <p className="kpi-label">Deuda no vencida</p>
             <p className="kpi-value" style={{ color: '#374151' }}>{fmt(d.mora?.noVencida)}</p>
-            <p className="kpi-prev">$3,6M en pendiente sin alertas ⚠️</p>
+            <p className="kpi-prev">Único colchón antes de mora 100% ⚠️</p>
           </div>
           <div className="kpi-card">
             <p className="kpi-label">Índice Gini</p>
@@ -1214,14 +1204,14 @@ function FinanzasReport({ d }) {
           </div>
         </div>
         <p style={{ fontSize: '0.82rem', color: '#4b5563', marginTop: 12, padding: '8px 12px', background: '#fef9c3', borderLeft: '3px solid #d97706', borderRadius: 4 }}>
-          La concentración crítica no está en los deudores individuales (HHI bajo) sino en las obras e inmobiliarias: 66,4% de mora en top 3 obras y 62,0% en top 3 inmobiliarias.
+          La concentración crítica no está en los deudores individuales (HHI bajo = 0,062) sino en las obras: 66,4% de mora en top 3 obras (EL PORTAL DE ROCA, Yatay 754, HORNOS 2719) y 63,6% en top 3 inmobiliarias (Particular, Di Paolo, Marcelo Russo).
         </p>
       </SectionBlock>
 
       {(d.conceptoNoEstandar || []).length > 0 && (
         <SectionBlock title="🚨 Alerta — Concepto no estándar en cartera">
           <p style={{ fontSize: '0.85rem', color: '#b91c1c', fontWeight: 600, marginBottom: 10 }}>
-            El concepto REFUERZO de JORGE CAMPI representa el 21% de la mora total y no aparece en ningún otro deudor. Su resolución puede reducir la mora instantáneamente en 21%.
+            4 deudores con conceptos REFUERZO/REFUERZO1/REFUERZO2/REFUERZO4 concentran $67.486 (36,8% de mora total). Todos en inmobiliaria Particular, excepto GUILLERMO PERALTA (Veronica Espinosa). Requieren validación legal antes de continuar cobranza.
           </p>
           <DataTable
             columns={[
@@ -1340,7 +1330,7 @@ function FinanzasReport({ d }) {
           rows={d.concentracionCobranza || []}
         />
         <p style={{ marginTop: 10, padding: '8px 12px', background: '#fff7ed', borderLeft: '3px solid #ea580c', borderRadius: 4, fontSize: '0.84rem', color: '#374151' }}>
-          Top 5 inmobiliarias concentran el 61,9% del cobro histórico. Si alguna de las top 3 interrumpe operación, el impacto sobre caja futura sería desproporcionado.
+          Top 5 inmobiliarias concentran el 61,8% del cobro histórico. Si alguna de las top 3 (Particular, Zelaschi, Yamil Remax) interrumpe operación, el impacto inmediato sobre caja futura sería del 15-20% mensual.
         </p>
       </SectionBlock>
 
@@ -1363,8 +1353,9 @@ function FinanzasReport({ d }) {
 
       <SectionBlock title="⚠️ Riesgo de transformación — pendiente no vencido → mora" defaultOpen={false}>
         <p style={{ fontSize: '0.84rem', color: '#374151', marginBottom: 12, lineHeight: 1.6 }}>
-          El reporte de deudores indica $0 en deuda no vencida, pero el reporte de cobranzas muestra{' '}
-          <strong style={{ color: '#dc2626' }}>$3.637.517 en pendiente sin alertas activas</strong>. Si ese pendiente migra a mora, los escenarios son:
+          El único deudor sin mora en cartera es{' '}
+          <strong style={{ color: '#dc2626' }}>PABLO GASTON SANDOVAL (BOSCH Y ORO, Di Paolo, $1.500 CUOTA3)</strong>{' '}
+          con vencimiento próximo. Si cae en mora, la cartera alcanza 100% de morosidad — colapso total.
         </p>
         <DataTable
           columns={[

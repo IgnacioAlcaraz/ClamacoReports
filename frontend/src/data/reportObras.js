@@ -117,11 +117,6 @@ export const obrasDesacople = [
   { obra: 'BOSCH Y ORO',          avance: 19.44, vendido: 5.43, descalce: 13.99, tipo: 'ALTO — Única obra con tracción comercial, pero descalce significativo.' },
   { obra: 'MITRE 538',            avance: 4.17,  vendido: 0,    descalce: 4.17,  tipo: 'POTENCIAL — Obra recién iniciada.' },
   { obra: 'Uruguay 1048',         avance: 3.23,  vendido: 0,    descalce: 3.23,  tipo: 'POTENCIAL — Obra recién iniciada.' },
-  { obra: 'MELIAN 7912/15',       avance: null,  vendido: 0,    descalce: null,  tipo: 'COMERCIAL — Sin datos de avance registrados.' },
-  { obra: 'URQUIZA 4550',         avance: null,  vendido: 0,    descalce: null,  tipo: 'COMERCIAL — Sin ventas registradas.' },
-  { obra: 'W. de Tata 4965',      avance: null,  vendido: 0,    descalce: null,  tipo: 'COMERCIAL — Sin ventas registradas.' },
-  { obra: 'Andres Ferreira 2930', avance: null,  vendido: 0,    descalce: null,  tipo: 'COMERCIAL — Sin ventas registradas.' },
-  { obra: 'GRANT 186',            avance: 100,   vendido: 100,  descalce: 0,     tipo: 'EQUILIBRADO — Entrega vencida desde marzo 2023. Requiere auditoría de cierre.' },
 ];
 
 // ── PROGRAMACIÓN ──────────────────────────────────────────────────────────────
